@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.omnaest.genetics.fasta.translator.NucleicAcidCode;
@@ -43,6 +44,11 @@ public class NucleicAcidCodeSequence
 		return new AminoAcidCodeSequence(TranslationUtils	.transform(this.nucleicAcidCodes.stream())
 															.map(frames -> frames.getCodeOfFirstFrame())
 															.collect(Collectors.toList()));
+	}
+
+	public Stream<NucleicAcidCode> stream()
+	{
+		return this.nucleicAcidCodes.stream();
 	}
 
 	public static NucleicAcidCodeSequence valueOf(String codes)

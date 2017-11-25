@@ -202,6 +202,12 @@ public class TranslationUtils
 			return this.getCodeOfNThFrame(2);
 		}
 
+		/**
+		 * index = 0,1,2,...
+		 * 
+		 * @param frameIndex
+		 * @return
+		 */
 		public C getCodeOfNThFrame(int frameIndex)
 		{
 			return this.framesWithCode != null && this.framesWithCode.length > frameIndex ? this.framesWithCode[frameIndex] : null;
