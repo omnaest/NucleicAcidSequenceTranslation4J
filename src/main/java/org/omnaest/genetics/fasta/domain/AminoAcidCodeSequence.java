@@ -48,6 +48,11 @@ public class AminoAcidCodeSequence
 		this.aminoAcidCodes.addAll(aminoAcidCodes);
 	}
 
+	public AminoAcidCodeSequence(Stream<AminoAcidCode> aminoAcidCodes)
+	{
+		this(aminoAcidCodes.collect(Collectors.toList()));
+	}
+
 	public static AminoAcidCodeSequence valueOf(String codes)
 	{
 		return new AminoAcidCodeSequence(Arrays	.stream(ArrayUtils.toObject(codes.toCharArray()))
@@ -96,6 +101,7 @@ public class AminoAcidCodeSequence
 	public String toString()
 	{
 		return StringUtils.join(this.aminoAcidCodes	.stream()
+													.filter(code -> code != null)
 													.map(code -> code.getCode())
 													.collect(Collectors.toList()),
 								"");
@@ -119,18 +125,29 @@ public class AminoAcidCodeSequence
 	public boolean equals(Object obj)
 	{
 		if (this == obj)
+		{
 			return true;
+		}
 		if (obj == null)
+		{
 			return false;
+		}
 		if (this.getClass() != obj.getClass())
+		{
 			return false;
+		}
 		AminoAcidCodeSequence other = (AminoAcidCodeSequence) obj;
 		if (this.aminoAcidCodes == null)
 		{
 			if (other.aminoAcidCodes != null)
+			{
 				return false;
-		} else if (!this.aminoAcidCodes.equals(other.aminoAcidCodes))
+			}
+		}
+		else if (!this.aminoAcidCodes.equals(other.aminoAcidCodes))
+		{
 			return false;
+		}
 		return true;
 	}
 
@@ -246,6 +263,11 @@ public class AminoAcidCodeSequence
 				return new AminoAcidCodeSequence(this.aminoAcidCodes);
 			}
 		};
+	}
+
+	public static AminoAcidCodeSequence valueOf(Collection<AminoAcidCode> aminoAcidCodes)
+	{
+		return new AminoAcidCodeSequence(aminoAcidCodes);
 	}
 
 }

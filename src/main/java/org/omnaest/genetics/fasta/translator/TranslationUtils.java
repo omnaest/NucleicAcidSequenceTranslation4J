@@ -24,14 +24,17 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.apache.commons.lang.ArrayUtils;
 import org.omnaest.genetics.fasta.domain.AminoAcidCodeSequence;
+import org.omnaest.genetics.fasta.domain.NucleicAcidCodeSequence;
+import org.omnaest.utils.ArrayUtils;
 import org.omnaest.utils.ListUtils;
+import org.omnaest.utils.StreamUtils;
 
 public class TranslationUtils
 {
@@ -54,7 +57,8 @@ public class TranslationUtils
 																														new ArrayList<NucleicAcidCode>())
 																												.toArray(new List[0]),
 																										new int[3]);
-			private AminoAcidCodeByFrames		aminoAcidCodeFrames		= new AminoAcidCodeByFrames(new AminoAcidCode[3], new int[3]);
+			private AminoAcidCodeByFrames		aminoAcidCodeFrames		= new AminoAcidCodeByFrames(new AminoAcidCode[3], new int[3],
+																									new NucleicAcidCode[3][3]);
 
 			private AtomicInteger readPosition = new AtomicInteger();
 
@@ -75,6 +79,7 @@ public class TranslationUtils
 							AminoAcidCode aminoAcidCode = CodonTableUtils.translate(nucleicAcidCodes);
 							this.aminoAcidCodeFrames.setCodeOfNThFrame(frame, aminoAcidCode);
 							this.aminoAcidCodeFrames.setSourcePositionOfNThFrame(frame, this.readPosition.get() - 2);
+							this.aminoAcidCodeFrames.setSourcesOfNthFrame(frame, nucleicAcidCodes.toArray(new NucleicAcidCode[3]));
 							nucleicAcidCodes.clear();
 						}
 					}
@@ -148,38 +153,73 @@ public class TranslationUtils
 	 * @author Omnaest
 	 * @param <C>
 	 */
-	public static class AminoAcidCodeByFrames extends CodeByFrames<AminoAcidCode>
+	public static class AminoAcidCodeByFrames extends CodeByFrames<AminoAcidCode, NucleicAcidCode>
 	{
-		public AminoAcidCodeByFrames(AminoAcidCode[] framesWithCode, int[] sourcePositions)
+		public AminoAcidCodeByFrames(AminoAcidCode[] framesWithCode, int[] sourcePositions, NucleicAcidCode[][] framesWithSources)
 		{
-			super(framesWithCode, sourcePositions);
+			super(framesWithCode, sourcePositions, framesWithSources);
 		}
 
 		@Override
 		public AminoAcidCodeByFrames clone()
 		{
-			return new AminoAcidCodeByFrames((AminoAcidCode[]) ArrayUtils.clone(this.framesWithCode), this.sourcePositions);
+			return new AminoAcidCodeByFrames(ArrayUtils.clone(this.framesWithCode), this.sourcePositions, ArrayUtils.deepClone(this.framesWithSources));
 		}
+
 	}
 
-	public static class NucleicAcidCodesByFrames extends CodeByFrames<List<NucleicAcidCode>>
+	public static class NucleicAcidCodesByFrames extends CodeByFrames<List<NucleicAcidCode>, List<NucleicAcidCode>>
 	{
 		public NucleicAcidCodesByFrames(List<NucleicAcidCode>[] framesWithCode, int[] sourcePositions)
 		{
-			super(framesWithCode, sourcePositions);
+			super(framesWithCode, sourcePositions, null);
 		}
 	}
 
-	public static class CodeByFrames<C>
+	public static class CodeByFrames<C, S>
 	{
 		protected C[]	framesWithCode;
+		protected S[][]	framesWithSources;
 		protected int[]	sourcePositions;
 
-		public CodeByFrames(C[] framesWithCode, int[] sourcePositions)
+		public CodeByFrames(C[] framesWithCode, int[] sourcePositions, S[][] framesWithSources)
 		{
 			super();
 			this.framesWithCode = framesWithCode;
 			this.sourcePositions = sourcePositions;
+			this.framesWithSources = framesWithSources;
+		}
+
+		public S[] getSourcesOfFirstFrame()
+		{
+			return this.getSourcesOfNthFrame(0);
+		}
+
+		public S[] getSourcesOfSecondFrame()
+		{
+			return this.getSourcesOfNthFrame(1);
+		}
+
+		public S[] getSourcesOfThirdFrame()
+		{
+			return this.getSourcesOfNthFrame(2);
+		}
+
+		/**
+		 * frameIndex = 0,1,2,...
+		 * 
+		 * @param frameIndex
+		 * @return
+		 */
+		public S[] getSourcesOfNthFrame(int frameIndex)
+		{
+			return this.framesWithSources[frameIndex];
+		}
+
+		public CodeByFrames<C, S> setSourcesOfNthFrame(int frameIndex, S[] sources)
+		{
+			this.framesWithSources[frameIndex] = sources;
+			return this;
 		}
 
 		public void setCodeOfNThFrame(int index, C code)
@@ -255,6 +295,25 @@ public class TranslationUtils
 						.map(filterMapper);
 	}
 
+	/**
+	 * Transforms a {@link NucleicAcidCodeSequence} into a {@link Stream} of {@link AminoAcidCode}s<br>
+	 * <br>
+	 * frame=0,1,2,...
+	 * 
+	 * @param frameIndex
+	 * @param nucleicAcidCodeSequence
+	 * @return
+	 */
+	public static Stream<AminoAcidCode> transform(int frameIndex, NucleicAcidCodeSequence nucleicAcidCodeSequence)
+	{
+		return transform(nucleicAcidCodeSequence).map(frame -> frame.getCodeOfNThFrame(frameIndex));
+	}
+
+	public static Stream<AminoAcidCodeByFrames> transform(NucleicAcidCodeSequence nucleicAcidCodeSequence)
+	{
+		return transform(nucleicAcidCodeSequence.stream());
+	}
+
 	public static class AminoAcidCodeSequenceAndPosition extends DataAndPosition<AminoAcidCodeSequence>
 	{
 		public AminoAcidCodeSequenceAndPosition(AminoAcidCodeSequence aminoAcidCodeSequence, int sourcePosition)
@@ -319,5 +378,125 @@ public class TranslationUtils
 
 	protected TranslationUtils()
 	{
+	}
+
+	public static NucleicAcidCodeSequence toNucleicAcidCodeSequence(String sequence)
+	{
+		return NucleicAcidCodeSequence.valueOf(sequence);
+	}
+
+	public static class CodeAndPosition<C>
+	{
+		private C		code;
+		private long	position;
+
+		public CodeAndPosition(C code, long position)
+		{
+			super();
+			this.code = code;
+			this.position = position;
+		}
+
+		public C getCode()
+		{
+			return this.code;
+		}
+
+		public long getPosition()
+		{
+			return this.position;
+		}
+
+		@Override
+		public String toString()
+		{
+			return "CodeAndPosition [code=" + this.code + ", position=" + this.position + "]";
+		}
+
+	}
+
+	public static class CodeAndPositionAndSource<C, S> extends CodeAndPosition<C>
+	{
+		private List<CodeAndPosition<S>> sources;
+
+		public CodeAndPositionAndSource(C code, long position, List<CodeAndPosition<S>> sources)
+		{
+			super(code, position);
+			this.sources = sources;
+		}
+
+		public List<CodeAndPosition<S>> getSources()
+		{
+			return this.sources;
+		}
+
+		@Override
+		public String toString()
+		{
+			return "CodeAndPositionAndSource [sources=" + this.sources + ", getCode()=" + this.getCode() + ", getPosition()=" + this.getPosition() + "]";
+		}
+
+	}
+
+	public static interface SequenceTranslation<C, S>
+	{
+		public Stream<CodeAndPositionAndSource<C, S>> asCodeAndPositionSequence();
+
+		public Stream<C> asCodeSequence();
+
+	}
+
+	public static interface NucleicAcidCodeSequenceTranslation extends SequenceTranslation<AminoAcidCode, NucleicAcidCode>
+	{
+		public AminoAcidCodeSequence asAminoAcidCodeSequence();
+	}
+
+	public static NucleicAcidCodeSequenceTranslation translate(int frame, NucleicAcidCodeSequence sequence)
+	{
+		return translate(frame, sequence.stream());
+	}
+
+	public static NucleicAcidCodeSequenceTranslation translate(int frame, Stream<NucleicAcidCode> sequence)
+	{
+		AtomicLong position = new AtomicLong();
+		return translateCodeAndPosition(frame, sequence.map(code -> new CodeAndPosition<>(code, position.getAndIncrement())));
+	}
+
+	public static NucleicAcidCodeSequenceTranslation translateCodeAndPosition(int frame, Stream<CodeAndPosition<NucleicAcidCode>> sequence)
+	{
+		AtomicLong position = new AtomicLong();
+		Stream<CodeAndPositionAndSource<AminoAcidCode, NucleicAcidCode>> retval = StreamUtils	.framed(3, sequence)
+																								.map(codes ->
+																								{
+																									List<CodeAndPosition<NucleicAcidCode>> codesList = Arrays.asList(codes);
+																									AminoAcidCode code = CodonTableUtils.translate(codesList.stream()
+																																							.map(cap -> cap.getCode())
+																																							.collect(Collectors.toList()));
+
+																									return new CodeAndPositionAndSource<AminoAcidCode, NucleicAcidCode>(code,
+																																										position.getAndIncrement(),
+																																										codesList);
+																								});
+		return new NucleicAcidCodeSequenceTranslation()
+		{
+			@Override
+			public Stream<CodeAndPositionAndSource<AminoAcidCode, NucleicAcidCode>> asCodeAndPositionSequence()
+			{
+				return retval;
+			}
+
+			@Override
+			public Stream<AminoAcidCode> asCodeSequence()
+			{
+				return retval.map(cap -> cap.getCode());
+			}
+
+			@Override
+			public AminoAcidCodeSequence asAminoAcidCodeSequence()
+			{
+				return new AminoAcidCodeSequence(this.asCodeSequence());
+			}
+
+		};
 	}
 }
