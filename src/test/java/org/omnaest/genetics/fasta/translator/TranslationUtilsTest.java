@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 import org.junit.Test;
 import org.omnaest.genetics.fasta.domain.AminoAcidCodeSequence;
 import org.omnaest.genetics.fasta.domain.NucleicAcidCodeSequence;
+import org.omnaest.genetics.fasta.translator.TranslationUtils.MultiNucleicAcidCodeSequenceTranslation;
 
 public class TranslationUtilsTest
 {
@@ -69,9 +70,53 @@ public class TranslationUtilsTest
 	@Test
 	public void testTranslateIntNucleicAcidCodeSequence() throws Exception
 	{
-		AminoAcidCodeSequence aminoAcidCodeSequence = TranslationUtils	.translate(0, NucleicAcidCodeSequence.valueOf("ATGCCACCCGTTGGGGGCAAAAAGGCCAAGAAG"))
-																		.asAminoAcidCodeSequence();
 
-		assertEquals(AminoAcidCodeSequence.valueOf("MPPVGGKKAKK"), aminoAcidCodeSequence);
+		assertEquals("MPPVGGKKAKK", TranslationUtils.translate(0, NucleicAcidCodeSequence.valueOf("ATGCCACCCGTTGGGGGCAAAAAGGCCAAGAAG"))
+													.asAminoAcidCodeSequence()
+													.toString());
+		assertEquals("CHPLGAKRPR", TranslationUtils	.translate(1, NucleicAcidCodeSequence.valueOf("ATGCCACCCGTTGGGGGCAAAAAGGCCAAGAAG"))
+													.asAminoAcidCodeSequence()
+													.toString());
+		assertEquals("ATRWGQKGQE", TranslationUtils	.translate(2, NucleicAcidCodeSequence.valueOf("ATGCCACCCGTTGGGGGCAAAAAGGCCAAGAAG"))
+													.asAminoAcidCodeSequence()
+													.toString());
+
+		//
+		assertEquals("SPS", TranslationUtils.translate(0, NucleicAcidCodeSequence.valueOf("TCGCCGTCCGC"))
+											.asAminoAcidCodeSequence()
+											.toString());
+		assertEquals("RRP", TranslationUtils.translate(1, NucleicAcidCodeSequence.valueOf("TCGCCGTCCGC"))
+											.asAminoAcidCodeSequence()
+											.toString());
+		assertEquals("AVR", TranslationUtils.translate(2, NucleicAcidCodeSequence.valueOf("TCGCCGTCCGC"))
+											.asAminoAcidCodeSequence()
+											.toString());
+
+		//
+		assertEquals("RSRAF", TranslationUtils	.translate(0, NucleicAcidCodeSequence.valueOf("CGATCTCGGGCGTTC"))
+												.asAminoAcidCodeSequence()
+												.toString());
+		assertEquals("DLGRS", TranslationUtils	.translate(1, NucleicAcidCodeSequence.valueOf("CGATCTCGGGCGTTCTG"))
+												.asAminoAcidCodeSequence()
+												.toString());
+		assertEquals("ISGVL", TranslationUtils	.translate(2, NucleicAcidCodeSequence.valueOf("CGATCTCGGGCGTTCTG"))
+												.asAminoAcidCodeSequence()
+												.toString());
 	}
+
+	@Test
+	public void testMultiTranslate() throws Exception
+	{
+		MultiNucleicAcidCodeSequenceTranslation translation = TranslationUtils.multiTranslate(NucleicAcidCodeSequence.valueOf("ATGCCACCCGTTGGGGGCAAAAAGGCCAAGAAG"));
+		assertEquals("MPPVGGKKAKK", translation	.getForFrame(0)
+												.asAminoAcidCodeSequence()
+												.toString());
+		assertEquals("CHPLGAKRPR", translation	.getForFrame(1)
+												.asAminoAcidCodeSequence()
+												.toString());
+		assertEquals("ATRWGQKGQE", translation	.getForFrame(2)
+												.asAminoAcidCodeSequence()
+												.toString());
+	}
+
 }

@@ -24,11 +24,14 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.omnaest.genetics.fasta.translator.NucleicAcidCode;
 import org.omnaest.genetics.fasta.translator.TranslationUtils;
+import org.omnaest.genetics.fasta.translator.TranslationUtils.CodeAndPosition;
+import org.omnaest.utils.ListUtils;
 
 public class NucleicAcidCodeSequence implements Iterable<NucleicAcidCode>
 {
@@ -65,8 +68,44 @@ public class NucleicAcidCodeSequence implements Iterable<NucleicAcidCode>
 													.collect(Collectors.toList()));
 	}
 
+	public static NucleicAcidCodeSequence valueOf(Collection<NucleicAcidCode> sequence)
+	{
+		return new NucleicAcidCodeSequence(sequence);
+	}
+
+	public static NucleicAcidCodeSequence valueOf(Stream<NucleicAcidCode> sequence)
+	{
+		return new NucleicAcidCodeSequence(sequence.collect(Collectors.toList()));
+	}
+
 	public NucleicAcidCode[] toArray()
 	{
 		return this.nucleicAcidCodes.toArray(new NucleicAcidCode[this.nucleicAcidCodes.size()]);
+	}
+
+	/**
+	 * Returns this {@link NucleicAcidCodeSequence} as a {@link Stream} of {@link CodeAndPosition} where the position = 0,1,2,...
+	 * 
+	 * @return
+	 */
+	public CodeAndPositionSequence<NucleicAcidCode> asCodeAndPositionSequence()
+	{
+		return CodeAndPositionSequence.valueOf(IntStream.range(0, this.nucleicAcidCodes.size())
+														.mapToObj(position -> new CodeAndPosition<>(this.nucleicAcidCodes.get(position), position)));
+	}
+
+	public List<NucleicAcidCode> toList()
+	{
+		return new ArrayList<>(this.nucleicAcidCodes);
+	}
+
+	/**
+	 * Returns the {@link NucleicAcidCodeSequence} in reverse order
+	 * 
+	 * @return
+	 */
+	public NucleicAcidCodeSequence inverse()
+	{
+		return valueOf(ListUtils.inverse(this.nucleicAcidCodes));
 	}
 }

@@ -29,7 +29,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.StringUtils;
 import org.omnaest.genetics.fasta.translator.AminoAcidCode;
 import org.omnaest.genetics.fasta.utils.BitSetUtils;
 
@@ -100,11 +99,10 @@ public class AminoAcidCodeSequence
 	@Override
 	public String toString()
 	{
-		return StringUtils.join(this.aminoAcidCodes	.stream()
-													.filter(code -> code != null)
-													.map(code -> code.getCode())
-													.collect(Collectors.toList()),
-								"");
+		return this.aminoAcidCodes	.stream()
+									.filter(code -> code != null)
+									.map(code -> String.valueOf(code.getCode()))
+									.collect(Collectors.joining());
 	}
 
 	public static AminoAcidCodeSequence valueOf(BitSet bitSet)
@@ -266,6 +264,11 @@ public class AminoAcidCodeSequence
 	}
 
 	public static AminoAcidCodeSequence valueOf(Collection<AminoAcidCode> aminoAcidCodes)
+	{
+		return new AminoAcidCodeSequence(aminoAcidCodes);
+	}
+
+	public static AminoAcidCodeSequence valueOf(Stream<AminoAcidCode> aminoAcidCodes)
 	{
 		return new AminoAcidCodeSequence(aminoAcidCodes);
 	}
