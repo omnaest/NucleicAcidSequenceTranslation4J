@@ -108,4 +108,9 @@ public class NucleicAcidCodeSequence implements Iterable<NucleicAcidCode>
 	{
 		return valueOf(ListUtils.inverse(this.nucleicAcidCodes));
 	}
+
+	public int size()
+	{
+		return this.nucleicAcidCodes.size();
+	}
 }
