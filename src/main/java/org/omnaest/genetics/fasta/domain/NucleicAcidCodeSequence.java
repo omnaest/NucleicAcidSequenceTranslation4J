@@ -100,6 +100,19 @@ public class NucleicAcidCodeSequence implements Iterable<NucleicAcidCode>
 	}
 
 	/**
+	 * Returns the code sequence representation like e.g. "GTATAAAGAGGCAGGCTGCGGA"
+	 */
+	@Override
+	public String toString()
+	{
+		return this	.toList()
+					.stream()
+					.map(code -> code.getCode())
+					.map(String::valueOf)
+					.collect(Collectors.joining());
+	}
+
+	/**
 	 * Returns the {@link NucleicAcidCodeSequence} in reverse order
 	 * 
 	 * @return

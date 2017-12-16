@@ -21,7 +21,9 @@ package org.omnaest.genetics.fasta.translator;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
@@ -40,6 +42,34 @@ import org.omnaest.utils.StreamUtils;
 
 public class TranslationUtils
 {
+	private static class NucleicAcidCodeSequenceTranslationImpl implements NucleicAcidCodeSequenceTranslation
+	{
+		private Stream<CodeAndPositionAndSource<AminoAcidCode, NucleicAcidCode>> codeAndPositionAndSourceStream;
+
+		public NucleicAcidCodeSequenceTranslationImpl(Stream<CodeAndPositionAndSource<AminoAcidCode, NucleicAcidCode>> codeAndPositionAndSourceStream)
+		{
+			this.codeAndPositionAndSourceStream = codeAndPositionAndSourceStream;
+		}
+
+		@Override
+		public Stream<CodeAndPositionAndSource<AminoAcidCode, NucleicAcidCode>> asCodeAndPositionAndSourceSequence()
+		{
+			return this.codeAndPositionAndSourceStream;
+		}
+
+		@Override
+		public Stream<AminoAcidCode> asCodeSequence()
+		{
+			return this.codeAndPositionAndSourceStream.map(cap -> cap.getCode());
+		}
+
+		@Override
+		public AminoAcidCodeSequence asAminoAcidCodeSequence()
+		{
+			return new AminoAcidCodeSequence(this.asCodeSequence());
+		}
+	}
+
 	private static interface NucleicAcidCodeFilterMapper extends Predicate<NucleicAcidCode>, Function<NucleicAcidCode, AminoAcidCodeByFrames>
 	{
 	}
@@ -454,6 +484,151 @@ public class TranslationUtils
 	}
 
 	/**
+	 * Similar to {@link #translate(int, NucleicAcidCodeSequence)}
+	 * 
+	 * @param frame
+	 * @param sequence
+	 * @return
+	 */
+	public static NucleicAcidCodeSequenceTranslation translate(int frame, String sequence)
+	{
+		return translate(frame, NucleicAcidCodeSequence.valueOf(sequence));
+	}
+
+	/**
+	 * Similar to {@link #translateAllFrames(NucleicAcidCodeSequence)}
+	 * 
+	 * @param sequence
+	 * @return
+	 */
+	public static Stream<NucleicAcidCodeSequenceTranslation> translateAllFrames(String sequence)
+	{
+		return translateAllFrames(NucleicAcidCodeSequence.valueOf(sequence));
+	}
+
+	/**
+	 * Translates all three frames using {@link #multiTranslate(NucleicAcidCodeSequence)}
+	 * 
+	 * @param sequence
+	 * @return
+	 */
+	public static Stream<NucleicAcidCodeSequenceTranslation> translateAllFrames(NucleicAcidCodeSequence sequence)
+	{
+		return IntStream.range(0, 3)
+						.mapToObj(frame -> translate(frame, sequence));
+	}
+
+	public static Stream<NucleicAcidCodeSequenceTranslation> translateAllReverseFrames(NucleicAcidCodeSequence sequence)
+	{
+		return IntStream.range(0, 3)
+						.mapToObj(frame -> translate(frame, sequence.inverse()))
+						.map(translation -> new NucleicAcidCodeSequenceTranslationImpl(StreamUtils.reverse(translation.asCodeAndPositionAndSourceSequence())));
+	}
+
+	/**
+	 * A {@link TranslationBuilder} allows to build {@link NucleicAcidCodeSequenceTranslation}s for the normal three frames and the reverse ones
+	 * 
+	 * @see #get()
+	 * @author omnaest
+	 */
+	public static interface TranslationBuilder
+	{
+		public TranslationBuilder frames(int... frames);
+
+		public TranslationBuilder allFrames();
+
+		public TranslationBuilder reverseFrames(int... frames);
+
+		public TranslationBuilder allReverseFrames();
+
+		public Stream<NucleicAcidCodeSequenceTranslation> get();
+	}
+
+	/**
+	 * Similar to {@link #translate(NucleicAcidCodeSequence)}
+	 * 
+	 * @param sequence
+	 * @return
+	 */
+	public static TranslationBuilder translate(String sequence)
+	{
+		return translate(NucleicAcidCodeSequence.valueOf(sequence));
+	}
+
+	/**
+	 * Returns a {@link TranslationBuilder}
+	 * 
+	 * @param sequence
+	 * @return
+	 */
+	public static TranslationBuilder translate(NucleicAcidCodeSequence sequence)
+	{
+		return new TranslationBuilder()
+		{
+			private Set<Integer>	frames			= new LinkedHashSet<>();
+			private Set<Integer>	reverseFrames	= new LinkedHashSet<>();
+
+			@Override
+			public TranslationBuilder frames(int... frames)
+			{
+				this.frames.addAll(Arrays.asList(org.apache.commons.lang3.ArrayUtils.toObject(frames)));
+				return this;
+			}
+
+			@Override
+			public TranslationBuilder allFrames()
+			{
+				return this.frames(0, 1, 2);
+			}
+
+			@Override
+			public TranslationBuilder reverseFrames(int... frames)
+			{
+				this.reverseFrames.addAll(Arrays.asList(org.apache.commons.lang3.ArrayUtils.toObject(frames)));
+				return this;
+			}
+
+			@Override
+			public TranslationBuilder allReverseFrames()
+			{
+				return this.reverseFrames(0, 1, 2);
+			}
+
+			@Override
+			public Stream<NucleicAcidCodeSequenceTranslation> get()
+			{
+				return Stream.concat(	this.frames	.stream()
+													.map(frame -> translate(frame, sequence)),
+										this.reverseFrames	.stream()
+															.map(frame -> translateReverse(frame, sequence)));
+			}
+
+		};
+	}
+
+	/**
+	 * Similar to {@link #translateAllFramesAndReverseFrames(NucleicAcidCodeSequence)}
+	 * 
+	 * @param sequence
+	 * @return
+	 */
+	public static Stream<NucleicAcidCodeSequenceTranslation> translateAllFramesAndReverseFrames(String sequence)
+	{
+		return translateAllFramesAndReverseFrames(NucleicAcidCodeSequence.valueOf(sequence));
+	}
+
+	/**
+	 * Returns
+	 * 
+	 * @param sequence
+	 * @return
+	 */
+	public static Stream<NucleicAcidCodeSequenceTranslation> translateAllFramesAndReverseFrames(NucleicAcidCodeSequence sequence)
+	{
+		return Stream.concat(translateAllFrames(sequence), translateAllReverseFrames(sequence));
+	}
+
+	/**
 	 * Similar to {@link #translateCodeAndPosition(int, Stream)}
 	 * 
 	 * @param frame
@@ -463,6 +638,18 @@ public class TranslationUtils
 	public static NucleicAcidCodeSequenceTranslation translate(int frame, NucleicAcidCodeSequence sequence)
 	{
 		return translateCodeAndPosition(frame, sequence.asCodeAndPositionSequence());
+	}
+
+	/**
+	 * Returns the reverse translation
+	 * 
+	 * @param frame
+	 * @param sequence
+	 * @return
+	 */
+	public static NucleicAcidCodeSequenceTranslation translateReverse(int frame, NucleicAcidCodeSequence sequence)
+	{
+		return new NucleicAcidCodeSequenceTranslationImpl(StreamUtils.reverse(translate(frame, sequence.inverse()).asCodeAndPositionAndSourceSequence()));
 	}
 
 	/**
@@ -512,27 +699,7 @@ public class TranslationUtils
 																																											codesList);
 																								})
 																								.filter(cap -> cap != null);
-		return new NucleicAcidCodeSequenceTranslation()
-		{
-			@Override
-			public Stream<CodeAndPositionAndSource<AminoAcidCode, NucleicAcidCode>> asCodeAndPositionAndSourceSequence()
-			{
-				return retval;
-			}
-
-			@Override
-			public Stream<AminoAcidCode> asCodeSequence()
-			{
-				return retval.map(cap -> cap.getCode());
-			}
-
-			@Override
-			public AminoAcidCodeSequence asAminoAcidCodeSequence()
-			{
-				return new AminoAcidCodeSequence(this.asCodeSequence());
-			}
-
-		};
+		return new NucleicAcidCodeSequenceTranslationImpl(retval);
 	}
 
 	public static interface MultiNucleicAcidCodeSequenceTranslation
