@@ -28,6 +28,7 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.omnaest.genetics.fasta.translator.ComplementaryBasePairUtils.ComplementationType;
 import org.omnaest.genetics.fasta.translator.NucleicAcidCode;
 import org.omnaest.genetics.fasta.translator.TranslationUtils;
 import org.omnaest.genetics.fasta.translator.TranslationUtils.CodeAndPosition;
@@ -125,5 +126,10 @@ public class NucleicAcidCodeSequence implements Iterable<NucleicAcidCode>
 	public int size()
 	{
 		return this.nucleicAcidCodes.size();
+	}
+
+	public NucleicAcidCodeSequence asReverseStrand(ComplementationType complementationType)
+	{
+		return TranslationUtils.reverseStrand(this, complementationType);
 	}
 }

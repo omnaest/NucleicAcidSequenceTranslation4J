@@ -36,6 +36,7 @@ import java.util.stream.Stream;
 import org.omnaest.genetics.fasta.domain.AminoAcidCodeSequence;
 import org.omnaest.genetics.fasta.domain.CodeAndPositionSequence;
 import org.omnaest.genetics.fasta.domain.NucleicAcidCodeSequence;
+import org.omnaest.genetics.fasta.translator.ComplementaryBasePairUtils.ComplementationType;
 import org.omnaest.utils.ArrayUtils;
 import org.omnaest.utils.ListUtils;
 import org.omnaest.utils.StreamUtils;
@@ -641,7 +642,17 @@ public class TranslationUtils
 	}
 
 	/**
-	 * Returns the reverse translation
+	 * Returns the reverse translation.<br>
+	 * <br>
+	 * E.g. the dna sequence "GCGATATCGCAAA" has following reverse strands:<br>
+	 * <br>
+	 * 3'5' Frame 1: F A I S<br>
+	 * 3'5' Frame 2: L R Y R<br>
+	 * 3'5' Frame 3: C D I<br>
+	 * <br>
+	 * <br>
+	 * {@link #translateReverse(int, NucleicAcidCodeSequence)} for frame = 0 would return "SIAF" which is 3'5' frame but in reverse direction (as it would be
+	 * read by the 5'3' direction)
 	 * 
 	 * @param frame
 	 * @param sequence
@@ -649,7 +660,9 @@ public class TranslationUtils
 	 */
 	public static NucleicAcidCodeSequenceTranslation translateReverse(int frame, NucleicAcidCodeSequence sequence)
 	{
-		return new NucleicAcidCodeSequenceTranslationImpl(StreamUtils.reverse(translate(frame, sequence.inverse()).asCodeAndPositionAndSourceSequence()));
+		ComplementationType complementationType = ComplementationType.DNA;
+		return new NucleicAcidCodeSequenceTranslationImpl(StreamUtils.reverse(translate(frame, sequence	.inverse()
+																										.asReverseStrand(complementationType)).asCodeAndPositionAndSourceSequence()));
 	}
 
 	/**
@@ -740,5 +753,37 @@ public class TranslationUtils
 			}
 
 		};
+	}
+
+	public static NucleicAcidCodeSequence reverseStrand(NucleicAcidCodeSequence sequence, ComplementationType complementationType)
+	{
+		return NucleicAcidCodeSequence.valueOf(sequence	.stream()
+														.map(code -> ComplementaryBasePairUtils.toComplement(code, complementationType)));
+	}
+
+	public static NucleicAcidCodeSequence translateFromRNAToDNA(NucleicAcidCodeSequence sequence)
+	{
+		return translateFromDNAToRNA(sequence);
+	}
+
+	public static NucleicAcidCodeSequence translateFromDNAToRNA(NucleicAcidCodeSequence sequence)
+	{
+		return NucleicAcidCodeSequence.valueOf(sequence	.stream()
+														.map(code ->
+														{
+															NucleicAcidCode retval = code;
+
+															if (NucleicAcidCode.T.equals(code))
+															{
+																retval = NucleicAcidCode.U;
+															}
+															else if (NucleicAcidCode.U.equals(code))
+															{
+																retval = NucleicAcidCode.T;
+															}
+
+															return retval;
+														}));
+
 	}
 }

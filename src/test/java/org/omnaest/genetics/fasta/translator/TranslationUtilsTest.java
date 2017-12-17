@@ -26,7 +26,9 @@ import java.util.stream.Collectors;
 import org.junit.Test;
 import org.omnaest.genetics.fasta.domain.AminoAcidCodeSequence;
 import org.omnaest.genetics.fasta.domain.NucleicAcidCodeSequence;
+import org.omnaest.genetics.fasta.translator.ComplementaryBasePairUtils.ComplementationType;
 import org.omnaest.genetics.fasta.translator.TranslationUtils.MultiNucleicAcidCodeSequenceTranslation;
+import org.omnaest.utils.StringUtils;
 
 public class TranslationUtilsTest
 {
@@ -117,6 +119,33 @@ public class TranslationUtilsTest
 		assertEquals("ATRWGQKGQE", translation	.getForFrame(2)
 												.asAminoAcidCodeSequence()
 												.toString());
+	}
+
+	@Test
+	public void testReverseStrand() throws Exception
+	{
+		NucleicAcidCodeSequence reverseStrand = TranslationUtils.reverseStrand(NucleicAcidCodeSequence.valueOf("GCGATATCGCAAA"), ComplementationType.DNA);
+		assertEquals("CGCTATAGCGTTT", reverseStrand.toString());
+
+		NucleicAcidCodeSequence rnaAntisenseStrand = TranslationUtils.translateFromDNAToRNA(reverseStrand);
+		assertEquals("CGCUAUAGCGUUU", rnaAntisenseStrand.toString());
+
+		NucleicAcidCodeSequence rnaSenseStrand = TranslationUtils.reverseStrand(rnaAntisenseStrand, ComplementationType.RNA);
+		assertEquals("GCGAUAUCGCAAA", rnaSenseStrand.toString());
+	}
+
+	@Test
+	public void testTranslateReverse() throws Exception
+	{
+		assertEquals(StringUtils.reverse("FAIS"), TranslationUtils	.translateReverse(0, NucleicAcidCodeSequence.valueOf("GCGATATCGCAAA"))
+																	.asAminoAcidCodeSequence()
+																	.toString());
+		assertEquals(StringUtils.reverse("LRYR"), TranslationUtils	.translateReverse(1, NucleicAcidCodeSequence.valueOf("GCGATATCGCAAA"))
+																	.asAminoAcidCodeSequence()
+																	.toString());
+		assertEquals(StringUtils.reverse("CDI"), TranslationUtils	.translateReverse(2, NucleicAcidCodeSequence.valueOf("GCGATATCGCAAA"))
+																	.asAminoAcidCodeSequence()
+																	.toString());
 	}
 
 }
