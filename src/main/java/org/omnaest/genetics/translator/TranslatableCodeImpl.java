@@ -4,16 +4,22 @@
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License
  * for the specific language governing permissions and limitations under the License.
  */
-package org.omnaest.genetics.fasta.translator;
+package org.omnaest.genetics.translator;
+
+import org.omnaest.genetics.translator.domain.AminoAcidCode;
+import org.omnaest.genetics.translator.domain.CodeAndPosition;
+import org.omnaest.genetics.translator.domain.NucleicAcidCode;
 
 public class TranslatableCodeImpl implements TranslatableCode
 {
-	private Character code;
+	private Character	code;
+	private long		position;
 
-	public TranslatableCodeImpl(Character code)
+	public TranslatableCodeImpl(Character code, long position)
 	{
 		super();
 		this.code = code;
+		this.position = position;
 	}
 
 	@Override
@@ -38,6 +44,18 @@ public class TranslatableCodeImpl implements TranslatableCode
 	public Character getRawCode()
 	{
 		return this.code;
+	}
+
+	@Override
+	public CodeAndPosition<NucleicAcidCode> asNucleicAcidCodeAndPosition()
+	{
+		return new CodeAndPosition<>(this.asNucleicAcidCode(), this.position);
+	}
+
+	@Override
+	public CodeAndPosition<AminoAcidCode> asAminoAcidCodeAndPosition()
+	{
+		return new CodeAndPosition<>(this.asAminoAcidCode(), this.position);
 	}
 
 }

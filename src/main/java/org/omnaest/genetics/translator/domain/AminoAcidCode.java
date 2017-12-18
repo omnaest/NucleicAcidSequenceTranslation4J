@@ -4,7 +4,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License
  * for the specific language governing permissions and limitations under the License.
  */
-package org.omnaest.genetics.fasta.translator;
+package org.omnaest.genetics.translator.domain;
 
 import java.util.ArrayList;
 import java.util.BitSet;
@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
 
-import org.omnaest.genetics.fasta.utils.BitSetUtils;
+import org.omnaest.genetics.translator.utils.BitSetUtils;
 
 public enum AminoAcidCode implements Predicate<AminoAcidCode>
 {

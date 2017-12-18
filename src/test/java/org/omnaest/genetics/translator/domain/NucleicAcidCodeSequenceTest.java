@@ -16,11 +16,12 @@
 
 
 */
-package org.omnaest.genetics.fasta.domain;
+package org.omnaest.genetics.translator.domain;
 
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
+import org.omnaest.genetics.translator.domain.NucleicAcidCodeSequence;
 
 public class NucleicAcidCodeSequenceTest
 {

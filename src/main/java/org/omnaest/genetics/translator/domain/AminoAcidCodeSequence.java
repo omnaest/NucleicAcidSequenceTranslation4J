@@ -16,7 +16,7 @@
 
 
 */
-package org.omnaest.genetics.fasta.domain;
+package org.omnaest.genetics.translator.domain;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,8 +29,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang.ArrayUtils;
-import org.omnaest.genetics.fasta.translator.AminoAcidCode;
-import org.omnaest.genetics.fasta.utils.BitSetUtils;
+import org.omnaest.genetics.translator.utils.BitSetUtils;
 
 public class AminoAcidCodeSequence
 {

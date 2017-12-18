@@ -16,7 +16,7 @@
 
 
 */
-package org.omnaest.genetics.fasta.utils;
+package org.omnaest.genetics.translator.utils;
 
 import java.util.ArrayList;
 import java.util.BitSet;

@@ -16,7 +16,7 @@
 
 
 */
-package org.omnaest.genetics.fasta.translator;
+package org.omnaest.genetics.translator;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -25,10 +25,12 @@ import static org.junit.Assert.assertTrue;
 import java.util.stream.Collectors;
 
 import org.junit.Test;
-import org.omnaest.genetics.fasta.domain.AminoAcidCodeSequence;
-import org.omnaest.genetics.fasta.domain.NucleicAcidCodeSequence;
-import org.omnaest.genetics.fasta.translator.ComplementaryBasePairUtils.ComplementationType;
-import org.omnaest.genetics.fasta.translator.TranslationUtils.MultiNucleicAcidCodeSequenceTranslation;
+import org.omnaest.genetics.translator.TranslationUtils;
+import org.omnaest.genetics.translator.ComplementaryBasePairUtils.ComplementationType;
+import org.omnaest.genetics.translator.TranslationUtils.MultiNucleicAcidCodeSequenceTranslation;
+import org.omnaest.genetics.translator.domain.AminoAcidCodeSequence;
+import org.omnaest.genetics.translator.domain.NucleicAcidCode;
+import org.omnaest.genetics.translator.domain.NucleicAcidCodeSequence;
 import org.omnaest.utils.StringUtils;
 
 public class TranslationUtilsTest

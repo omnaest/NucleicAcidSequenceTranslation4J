@@ -17,7 +17,7 @@
 
 */
 
-package org.omnaest.genetics.fasta.translator;
+package org.omnaest.genetics.translator;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,10 +33,14 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import org.omnaest.genetics.fasta.domain.AminoAcidCodeSequence;
-import org.omnaest.genetics.fasta.domain.CodeAndPositionSequence;
-import org.omnaest.genetics.fasta.domain.NucleicAcidCodeSequence;
-import org.omnaest.genetics.fasta.translator.ComplementaryBasePairUtils.ComplementationType;
+import org.omnaest.genetics.translator.ComplementaryBasePairUtils.ComplementationType;
+import org.omnaest.genetics.translator.domain.AminoAcidCode;
+import org.omnaest.genetics.translator.domain.AminoAcidCodeSequence;
+import org.omnaest.genetics.translator.domain.CodeAndPosition;
+import org.omnaest.genetics.translator.domain.CodeAndPositionAndSource;
+import org.omnaest.genetics.translator.domain.CodeAndPositionSequence;
+import org.omnaest.genetics.translator.domain.NucleicAcidCode;
+import org.omnaest.genetics.translator.domain.NucleicAcidCodeSequence;
 import org.omnaest.utils.ArrayUtils;
 import org.omnaest.utils.ListUtils;
 import org.omnaest.utils.StreamUtils;
@@ -416,59 +420,6 @@ public class TranslationUtils
 	public static NucleicAcidCodeSequence toNucleicAcidCodeSequence(String sequence)
 	{
 		return NucleicAcidCodeSequence.valueOf(sequence);
-	}
-
-	public static class CodeAndPosition<C>
-	{
-		private C		code;
-		private long	position;
-
-		public CodeAndPosition(C code, long position)
-		{
-			super();
-			this.code = code;
-			this.position = position;
-		}
-
-		public C getCode()
-		{
-			return this.code;
-		}
-
-		public long getPosition()
-		{
-			return this.position;
-		}
-
-		@Override
-		public String toString()
-		{
-			return "CodeAndPosition [code=" + this.code + ", position=" + this.position + "]";
-		}
-
-	}
-
-	public static class CodeAndPositionAndSource<C, S> extends CodeAndPosition<C>
-	{
-		private List<CodeAndPosition<S>> sources;
-
-		public CodeAndPositionAndSource(C code, long position, List<CodeAndPosition<S>> sources)
-		{
-			super(code, position);
-			this.sources = sources;
-		}
-
-		public List<CodeAndPosition<S>> getSources()
-		{
-			return this.sources;
-		}
-
-		@Override
-		public String toString()
-		{
-			return "CodeAndPositionAndSource [sources=" + this.sources + ", getCode()=" + this.getCode() + ", getPosition()=" + this.getPosition() + "]";
-		}
-
 	}
 
 	public static interface SequenceTranslation<C, S>

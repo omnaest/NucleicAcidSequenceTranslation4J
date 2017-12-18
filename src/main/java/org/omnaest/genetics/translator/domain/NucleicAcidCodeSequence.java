@@ -16,7 +16,7 @@
 
 
 */
-package org.omnaest.genetics.fasta.domain;
+package org.omnaest.genetics.translator.domain;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,10 +28,8 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang.ArrayUtils;
-import org.omnaest.genetics.fasta.translator.ComplementaryBasePairUtils.ComplementationType;
-import org.omnaest.genetics.fasta.translator.NucleicAcidCode;
-import org.omnaest.genetics.fasta.translator.TranslationUtils;
-import org.omnaest.genetics.fasta.translator.TranslationUtils.CodeAndPosition;
+import org.omnaest.genetics.translator.TranslationUtils;
+import org.omnaest.genetics.translator.ComplementaryBasePairUtils.ComplementationType;
 import org.omnaest.utils.ListUtils;
 
 public class NucleicAcidCodeSequence implements Iterable<NucleicAcidCode>
@@ -108,7 +106,7 @@ public class NucleicAcidCodeSequence implements Iterable<NucleicAcidCode>
 	{
 		return this	.toList()
 					.stream()
-					.map(code -> code.getCode())
+					.map(code -> code.getRawCode())
 					.map(String::valueOf)
 					.collect(Collectors.joining());
 	}

@@ -4,7 +4,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License
  * for the specific language governing permissions and limitations under the License.
  */
-package org.omnaest.genetics.fasta.translator;
+package org.omnaest.genetics.translator.domain;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -53,7 +53,12 @@ public enum NucleicAcidCode implements Predicate<Character>
 		return this.predicate.test(t);
 	}
 
-	public Character getCode()
+	/**
+	 * Returns the raw {@link Character} code
+	 * 
+	 * @return
+	 */
+	public Character getRawCode()
 	{
 		return this.code;
 	}
@@ -71,7 +76,7 @@ public enum NucleicAcidCode implements Predicate<Character>
 		NucleicAcidCode retval = null;
 		for (NucleicAcidCode nucleicAcidCode : NucleicAcidCode.values())
 		{
-			if (nucleicAcidCode	.getCode()
+			if (nucleicAcidCode	.getRawCode()
 								.equals(Character.toUpperCase(code)))
 			{
 				retval = nucleicAcidCode;
@@ -92,7 +97,7 @@ public enum NucleicAcidCode implements Predicate<Character>
 		Set<NucleicAcidCode> retval = new LinkedHashSet<>();
 		for (NucleicAcidCode nucleicAcidCode : NucleicAcidCode.values())
 		{
-			if (nucleicAcidCode.test(this.getCode()))
+			if (nucleicAcidCode.test(this.getRawCode()))
 			{
 				retval.add(nucleicAcidCode);
 			}

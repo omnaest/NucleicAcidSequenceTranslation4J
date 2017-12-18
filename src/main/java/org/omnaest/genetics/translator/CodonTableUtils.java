@@ -16,7 +16,7 @@
 
 
 */
-package org.omnaest.genetics.fasta.translator;
+package org.omnaest.genetics.translator;
 
 import java.util.Arrays;
 import java.util.List;
@@ -25,6 +25,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.omnaest.genetics.translator.domain.AminoAcidCode;
+import org.omnaest.genetics.translator.domain.NucleicAcidCode;
 
 public class CodonTableUtils
 {

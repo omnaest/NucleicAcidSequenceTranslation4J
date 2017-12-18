@@ -16,10 +16,11 @@
 
 
 */
-package org.omnaest.genetics.fasta.translator;
+package org.omnaest.genetics.translator;
 
 import java.util.Map;
 
+import org.omnaest.genetics.translator.domain.NucleicAcidCode;
 import org.omnaest.utils.MapUtils;
 
 /**

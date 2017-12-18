@@ -16,7 +16,7 @@
 
 
 */
-package org.omnaest.genetics.fasta.domain;
+package org.omnaest.genetics.translator.domain;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -26,7 +26,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.omnaest.genetics.fasta.translator.TranslationUtils.CodeAndPosition;
 import org.omnaest.utils.ListUtils;
 
 /**

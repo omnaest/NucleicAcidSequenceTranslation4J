@@ -4,7 +4,11 @@
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License
  * for the specific language governing permissions and limitations under the License.
  */
-package org.omnaest.genetics.fasta.translator;
+package org.omnaest.genetics.translator;
+
+import org.omnaest.genetics.translator.domain.AminoAcidCode;
+import org.omnaest.genetics.translator.domain.CodeAndPosition;
+import org.omnaest.genetics.translator.domain.NucleicAcidCode;
 
 /**
  * Wrapper around a raw code which allows to translate the raw code into other representations like an {@link NucleicAcidCode} or {@link AminoAcidCode}
@@ -27,5 +31,24 @@ public interface TranslatableCode
 	 */
 	public AminoAcidCode asAminoAcidCode();
 
+	/**
+	 * Returns the raw {@link Character}
+	 * 
+	 * @return
+	 */
 	public Character getRawCode();
+
+	/**
+	 * Returns the {@link CodeAndPosition} of the {@link NucleicAcidCode}
+	 * 
+	 * @return
+	 */
+	public CodeAndPosition<NucleicAcidCode> asNucleicAcidCodeAndPosition();
+
+	/**
+	 * Returns the {@link CodeAndPosition} of the {@link AminoAcidCode}
+	 * 
+	 * @return
+	 */
+	public CodeAndPosition<AminoAcidCode> asAminoAcidCodeAndPosition();
 }
