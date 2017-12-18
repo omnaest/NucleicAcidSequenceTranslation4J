@@ -20,6 +20,7 @@ package org.omnaest.genetics.fasta.translator;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.stream.Collectors;
 
@@ -146,6 +147,48 @@ public class TranslationUtilsTest
 		assertEquals(StringUtils.reverse("CDI"), TranslationUtils	.translateReverse(2, NucleicAcidCodeSequence.valueOf("GCGATATCGCAAA"))
 																	.asAminoAcidCodeSequence()
 																	.toString());
+
+	}
+
+	@Test
+	public void testTranslation()
+	{
+		{
+			//
+			boolean anyMatch = TranslationUtils	.translate("ATGCTCCGTCCCGGCGCGCAGCTGCTGCGGG")
+												.allFrames()
+												.get()
+												.anyMatch(translation -> org.apache.commons.lang3.StringUtils.equalsIgnoreCase(	translation	.asAminoAcidCodeSequence()
+																																			.toString(),
+																																"MLRPGAQLLR"));
+
+			assertTrue(anyMatch);
+		}
+		{
+			//
+			String sequence = StringUtils.reverse("ATGCTCCGTCCCGGCGCGCAGCTGCTGCGGG");
+
+			String reverseStrand = TranslationUtils	.reverseStrand(NucleicAcidCodeSequence.valueOf(sequence), ComplementationType.DNA)
+													.toString();
+
+			//			System.out.println(reverseStrand);
+			//			String reverseTranslation = TranslationUtils.translateReverse(0, NucleicAcidCodeSequence.valueOf(reverseStrand))
+			//														.asAminoAcidCodeSequence()
+			//														.toString();
+			//			System.out.println(reverseTranslation);
+			//			System.out.println();
+
+			boolean anyMatch = TranslationUtils	.translate(reverseStrand)
+												.allReverseFrames()
+												.get()
+												.map(translation -> translation	.asAminoAcidCodeSequence()
+																				.toString())
+												//												.peek(System.out::println)
+												.anyMatch(isequence -> org.apache.commons.lang3.StringUtils.equalsIgnoreCase(	isequence,
+																																org.apache.commons.lang3.StringUtils.reverse("MLRPGAQLLR")));
+
+			assertTrue(anyMatch);
+		}
 	}
 
 }
