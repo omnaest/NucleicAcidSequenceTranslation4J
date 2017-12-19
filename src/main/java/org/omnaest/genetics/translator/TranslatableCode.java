@@ -6,6 +6,8 @@
  */
 package org.omnaest.genetics.translator;
 
+import java.util.function.Consumer;
+
 import org.omnaest.genetics.translator.domain.AminoAcidCode;
 import org.omnaest.genetics.translator.domain.CodeAndPosition;
 import org.omnaest.genetics.translator.domain.NucleicAcidCode;
@@ -19,6 +21,10 @@ import org.omnaest.genetics.translator.domain.NucleicAcidCode;
  */
 public interface TranslatableCode
 {
+	public static interface InvalidTranslationHandler extends Consumer<TranslatableCode>
+	{
+	}
+
 	/**
 	 * @see NucleicAcidCode
 	 * @return
@@ -44,6 +50,14 @@ public interface TranslatableCode
 	 * @return
 	 */
 	public CodeAndPosition<NucleicAcidCode> asNucleicAcidCodeAndPosition();
+
+	/**
+	 * Defines a {@link InvalidTranslationHandler} which is called if a translation to an {@link NucleicAcidCode} or {@link AminoAcidCode} failed
+	 * 
+	 * @param handler
+	 * @return
+	 */
+	public TranslatableCode withInvalidTranslationHandler(InvalidTranslationHandler handler);
 
 	/**
 	 * Returns the {@link CodeAndPosition} of the {@link AminoAcidCode}

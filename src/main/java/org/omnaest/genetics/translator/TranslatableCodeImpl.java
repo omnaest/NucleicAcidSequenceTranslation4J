@@ -12,8 +12,18 @@ import org.omnaest.genetics.translator.domain.NucleicAcidCode;
 
 public class TranslatableCodeImpl implements TranslatableCode
 {
-	private Character	code;
-	private long		position;
+	private Character					code;
+	private long						position;
+	private InvalidTranslationHandler	handler	= tc ->
+												{
+												};
+
+	@Override
+	public TranslatableCode withInvalidTranslationHandler(InvalidTranslationHandler handler)
+	{
+		this.handler = handler;
+		return this;
+	}
 
 	public TranslatableCodeImpl(Character code, long position)
 	{
@@ -25,7 +35,14 @@ public class TranslatableCodeImpl implements TranslatableCode
 	@Override
 	public NucleicAcidCode asNucleicAcidCode()
 	{
-		return NucleicAcidCode.valueOf(this.code);
+		NucleicAcidCode retval = NucleicAcidCode.valueOf(this.code);
+
+		if (retval == null)
+		{
+			this.handler.accept(this);
+		}
+
+		return retval;
 	}
 
 	@Override
@@ -37,7 +54,14 @@ public class TranslatableCodeImpl implements TranslatableCode
 	@Override
 	public AminoAcidCode asAminoAcidCode()
 	{
-		return AminoAcidCode.valueOf(this.code);
+		AminoAcidCode retval = AminoAcidCode.valueOf(this.code);
+
+		if (retval == null)
+		{
+			this.handler.accept(this);
+		}
+
+		return retval;
 	}
 
 	@Override

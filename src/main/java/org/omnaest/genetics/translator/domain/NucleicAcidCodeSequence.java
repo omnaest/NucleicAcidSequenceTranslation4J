@@ -28,9 +28,10 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang.ArrayUtils;
-import org.omnaest.genetics.translator.TranslationUtils;
 import org.omnaest.genetics.translator.ComplementaryBasePairUtils.ComplementationType;
+import org.omnaest.genetics.translator.TranslationUtils;
 import org.omnaest.utils.ListUtils;
+import org.omnaest.utils.ObjectUtils;
 
 public class NucleicAcidCodeSequence implements Iterable<NucleicAcidCode>
 {
@@ -106,7 +107,7 @@ public class NucleicAcidCodeSequence implements Iterable<NucleicAcidCode>
 	{
 		return this	.toList()
 					.stream()
-					.map(code -> code.getRawCode())
+					.map(code -> ObjectUtils.getOrDefaultIfNotNull(code, c -> code.getRawCode(), c -> ' '))
 					.map(String::valueOf)
 					.collect(Collectors.joining());
 	}
