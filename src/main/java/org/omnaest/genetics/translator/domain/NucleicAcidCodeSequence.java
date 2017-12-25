@@ -20,6 +20,7 @@ package org.omnaest.genetics.translator.domain;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.BitSet;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -32,33 +33,65 @@ import org.omnaest.genetics.translator.ComplementaryBasePairUtils.Complementatio
 import org.omnaest.genetics.translator.TranslationUtils;
 import org.omnaest.utils.ListUtils;
 import org.omnaest.utils.ObjectUtils;
+import org.omnaest.utils.list.enumeration.CompressableEnumList;
 
+/**
+ * Storage of a sequence of {@link NucleicAcidCode}s
+ * 
+ * @see #usingInMemoryCompression()
+ * @see #valueOf(String)
+ * @see #valueOf(Stream)
+ * @see #valueOf(Collection)
+ * @author omnaest
+ */
 public class NucleicAcidCodeSequence implements Iterable<NucleicAcidCode>
 {
-	private List<NucleicAcidCode> nucleicAcidCodes = new ArrayList<>();
+	private CompressableEnumList<NucleicAcidCode> codesEnumList = new CompressableEnumList<>(NucleicAcidCode.class);
 
 	public NucleicAcidCodeSequence(Collection<NucleicAcidCode> nucleicAcidCodes)
 	{
 		super();
-		this.nucleicAcidCodes.addAll(nucleicAcidCodes);
+		this.codesEnumList.addAll(nucleicAcidCodes);
+	}
+
+	/**
+	 * Uses an {@link BitSet} internally to store the {@link NucleicAcidCode} sequence, which uses only as much bits as needed per {@link NucleicAcidCode}
+	 * 
+	 * @see #usingInMemoryCompression(boolean)
+	 * @return
+	 */
+	public NucleicAcidCodeSequence usingInMemoryCompression()
+	{
+		return this.usingInMemoryCompression(true);
+	}
+
+	/**
+	 * @see #usingInMemoryCompression()
+	 * @param active
+	 * @return
+	 */
+	public NucleicAcidCodeSequence usingInMemoryCompression(boolean active)
+	{
+		this.codesEnumList.usingInMemoryCompression(active);
+		return this;
 	}
 
 	public AminoAcidCodeSequence asAminoAcidCodeSequence()
 	{
-		return new AminoAcidCodeSequence(TranslationUtils	.transform(this.nucleicAcidCodes.stream())
+		return new AminoAcidCodeSequence(TranslationUtils	.transform(this.codesEnumList.stream())
 															.map(frames -> frames.getCodeOfFirstFrame())
 															.collect(Collectors.toList()));
 	}
 
 	public Stream<NucleicAcidCode> stream()
 	{
-		return this.nucleicAcidCodes.stream();
+		return this.codesEnumList.stream();
 	}
 
 	@Override
 	public Iterator<NucleicAcidCode> iterator()
 	{
-		return this.nucleicAcidCodes.iterator();
+		return this.codesEnumList.iterator();
 	}
 
 	public static NucleicAcidCodeSequence valueOf(String codes)
@@ -80,7 +113,7 @@ public class NucleicAcidCodeSequence implements Iterable<NucleicAcidCode>
 
 	public NucleicAcidCode[] toArray()
 	{
-		return this.nucleicAcidCodes.toArray(new NucleicAcidCode[this.nucleicAcidCodes.size()]);
+		return this.codesEnumList.toArray(new NucleicAcidCode[this.codesEnumList.size()]);
 	}
 
 	/**
@@ -90,13 +123,13 @@ public class NucleicAcidCodeSequence implements Iterable<NucleicAcidCode>
 	 */
 	public CodeAndPositionSequence<NucleicAcidCode> asCodeAndPositionSequence()
 	{
-		return CodeAndPositionSequence.valueOf(IntStream.range(0, this.nucleicAcidCodes.size())
-														.mapToObj(position -> new CodeAndPosition<>(this.nucleicAcidCodes.get(position), position)));
+		return CodeAndPositionSequence.valueOf(IntStream.range(0, this.codesEnumList.size())
+														.mapToObj(position -> new CodeAndPosition<>(this.codesEnumList.get(position), position)));
 	}
 
 	public List<NucleicAcidCode> toList()
 	{
-		return new ArrayList<>(this.nucleicAcidCodes);
+		return new ArrayList<>(this.codesEnumList);
 	}
 
 	/**
@@ -119,16 +152,17 @@ public class NucleicAcidCodeSequence implements Iterable<NucleicAcidCode>
 	 */
 	public NucleicAcidCodeSequence inverse()
 	{
-		return valueOf(ListUtils.inverse(this.nucleicAcidCodes));
+		return valueOf(ListUtils.inverse(this.codesEnumList)).usingInMemoryCompression(this.codesEnumList.isInMemoryCompressionActive());
 	}
 
 	public int size()
 	{
-		return this.nucleicAcidCodes.size();
+		return this.codesEnumList.size();
 	}
 
 	public NucleicAcidCodeSequence asReverseStrand(ComplementationType complementationType)
 	{
-		return TranslationUtils.reverseStrand(this, complementationType);
+		return TranslationUtils	.reverseStrand(this, complementationType)
+								.usingInMemoryCompression(this.codesEnumList.isInMemoryCompressionActive());
 	}
 }

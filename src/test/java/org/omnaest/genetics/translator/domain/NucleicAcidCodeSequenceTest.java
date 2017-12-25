@@ -21,8 +21,11 @@ package org.omnaest.genetics.translator.domain;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
-import org.omnaest.genetics.translator.domain.NucleicAcidCodeSequence;
 
+/**
+ * @see NucleicAcidCodeSequence
+ * @author omnaest
+ */
 public class NucleicAcidCodeSequenceTest
 {
 
@@ -31,6 +34,16 @@ public class NucleicAcidCodeSequenceTest
 	{
 		String codes = "GTATAAAGAGGCAGGCTGCGGACTCGGAGCAGCTCGGGGCTGCGCAGCGGGAAGGCTCGCCTAGTCGGTCCGCATCCGTGTCGACCACCTGTCTGGACACCACGAAGATGCCACCCGTTGGGGGCAAAAAGGCCAAGAAGGTGAG";
 		String result = NucleicAcidCodeSequence	.valueOf(codes)
+												.toString();
+		assertEquals(codes, result);
+	}
+
+	@Test
+	public void testToStringWithActiveInMemoryCompression() throws Exception
+	{
+		String codes = "GTATAAAGAGGCAGGCTGCGGACTCGGAGCAGCTCGGGGCTGCGCAGCGGGAAGGCTCGCCTAGTCGGTCCGCATCCGTGTCGACCACCTGTCTGGACACCACGAAGATGCCACCCGTTGGGGGCAAAAAGGCCAAGAAGGTGAG";
+		String result = NucleicAcidCodeSequence	.valueOf(codes)
+												.usingInMemoryCompression()
 												.toString();
 		assertEquals(codes, result);
 	}
