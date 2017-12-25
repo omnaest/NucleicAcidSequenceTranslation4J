@@ -28,16 +28,16 @@ public class AminoAcidCodeSequenceTest
 	@Test
 	public void testValueOfString() throws Exception
 	{
-		assertEquals("ACDEF", AminoAcidCodeSequence	.valueOf("ACDEF")
-													.toString());
+		assertEquals("ACDEFYW", AminoAcidCodeSequence	.valueOf("ACDEFYW")
+														.toString());
 	}
 
 	@Test
 	public void testValueOfStringWithInMemoryCompression() throws Exception
 	{
-		assertEquals("ACDEF", AminoAcidCodeSequence	.valueOf("ACDEF")
-													.usingInMemoryCompression()
-													.toString());
+		assertEquals("YACDEFW", AminoAcidCodeSequence	.valueOf("YACDEFW")
+														.usingInMemoryCompression()
+														.toString());
 	}
 
 }
