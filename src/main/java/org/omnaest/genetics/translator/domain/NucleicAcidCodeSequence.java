@@ -42,6 +42,7 @@ import org.omnaest.utils.list.enumeration.CompressableEnumList;
  * @see #valueOf(String)
  * @see #valueOf(Stream)
  * @see #valueOf(Collection)
+ * @see AminoAcidCodeSequence
  * @author omnaest
  */
 public class NucleicAcidCodeSequence implements Iterable<NucleicAcidCode>

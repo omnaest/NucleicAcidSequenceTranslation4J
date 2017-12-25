@@ -29,11 +29,18 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang.ArrayUtils;
-import org.omnaest.genetics.translator.utils.BitSetUtils;
+import org.omnaest.utils.BitSetUtils;
+import org.omnaest.utils.list.enumeration.CompressableEnumList;
 
+/**
+ * {@link AminoAcidCode} sequence storage
+ * 
+ * @see NucleicAcidCodeSequence
+ * @author omnaest
+ */
 public class AminoAcidCodeSequence
 {
-	protected List<AminoAcidCode> aminoAcidCodes = new ArrayList<>();
+	private CompressableEnumList<AminoAcidCode> codesEnumList = new CompressableEnumList<>(AminoAcidCode.class);
 
 	public AminoAcidCodeSequence(AminoAcidCode... aminoAcidCodes)
 	{
@@ -43,12 +50,34 @@ public class AminoAcidCodeSequence
 	public AminoAcidCodeSequence(Collection<AminoAcidCode> aminoAcidCodes)
 	{
 		super();
-		this.aminoAcidCodes.addAll(aminoAcidCodes);
+		this.codesEnumList.addAll(aminoAcidCodes);
 	}
 
 	public AminoAcidCodeSequence(Stream<AminoAcidCode> aminoAcidCodes)
 	{
 		this(aminoAcidCodes.collect(Collectors.toList()));
+	}
+
+	/**
+	 * Activates the in memory compression
+	 * 
+	 * @return
+	 */
+	public AminoAcidCodeSequence usingInMemoryCompression()
+	{
+		return this.usingInMemoryCompression(true);
+	}
+
+	/**
+	 * Enables or disables the in memory compression. Default is not active.
+	 * 
+	 * @param active
+	 * @return
+	 */
+	public AminoAcidCodeSequence usingInMemoryCompression(boolean active)
+	{
+		this.codesEnumList.usingInMemoryCompression(active);
+		return this;
 	}
 
 	public static AminoAcidCodeSequence valueOf(String codes)
@@ -70,19 +99,19 @@ public class AminoAcidCodeSequence
 		{
 			Iterator<AminoAcidCode> validationIterator = aminoAcidCodes	.toList()
 																		.iterator();
-			return this.aminoAcidCodes	.stream()
+			return this.codesEnumList	.stream()
 										.allMatch(aminoAcidCode -> validationIterator.hasNext() && aminoAcidCode.test(validationIterator.next()));
 		};
 	}
 
 	private List<AminoAcidCode> toList()
 	{
-		return new ArrayList<>(this.aminoAcidCodes);
+		return new ArrayList<>(this.codesEnumList);
 	}
 
 	public BitSet asBitSet()
 	{
-		byte[] values = ArrayUtils.toPrimitive(this.aminoAcidCodes	.stream()
+		byte[] values = ArrayUtils.toPrimitive(this.codesEnumList	.stream()
 																	.map(aminoAcidCode -> BitSetUtils.toByte(aminoAcidCode.asBitSet()))
 																	.collect(Collectors.toList())
 																	.toArray(new Byte[0]));
@@ -92,13 +121,13 @@ public class AminoAcidCodeSequence
 
 	public Stream<AminoAcidCode> stream()
 	{
-		return this.aminoAcidCodes.stream();
+		return this.codesEnumList.stream();
 	}
 
 	@Override
 	public String toString()
 	{
-		return this.aminoAcidCodes	.stream()
+		return this.codesEnumList	.stream()
 									.filter(code -> code != null)
 									.map(code -> String.valueOf(code.getCode()))
 									.collect(Collectors.joining());
@@ -114,7 +143,7 @@ public class AminoAcidCodeSequence
 	{
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((this.aminoAcidCodes == null) ? 0 : this.aminoAcidCodes.hashCode());
+		result = prime * result + ((this.codesEnumList == null) ? 0 : this.codesEnumList.hashCode());
 		return result;
 	}
 
@@ -134,14 +163,14 @@ public class AminoAcidCodeSequence
 			return false;
 		}
 		AminoAcidCodeSequence other = (AminoAcidCodeSequence) obj;
-		if (this.aminoAcidCodes == null)
+		if (this.codesEnumList == null)
 		{
-			if (other.aminoAcidCodes != null)
+			if (other.codesEnumList != null)
 			{
 				return false;
 			}
 		}
-		else if (!this.aminoAcidCodes.equals(other.aminoAcidCodes))
+		else if (!this.codesEnumList.equals(other.codesEnumList))
 		{
 			return false;
 		}
@@ -152,10 +181,10 @@ public class AminoAcidCodeSequence
 	{
 		boolean retval = false;
 
-		List<AminoAcidCode> externalAminoAcidCodes = aminoAcidCodeSequence.getAminoAcidCodes();
+		List<AminoAcidCode> externalAminoAcidCodes = aminoAcidCodeSequence.asList();
 
 		List<AminoAcidCode> flowingAminoAcidCodes = new ArrayList<>();
-		for (AminoAcidCode aminoAcidCode : this.aminoAcidCodes)
+		for (AminoAcidCode aminoAcidCode : this.codesEnumList)
 		{
 			flowingAminoAcidCodes.add(aminoAcidCode);
 			if (flowingAminoAcidCodes.size() > externalAminoAcidCodes.size())
@@ -181,14 +210,9 @@ public class AminoAcidCodeSequence
 		return flowingAminoAcidCodes.equals(externalAminoAcidCodes);
 	}
 
-	private List<AminoAcidCode> getAminoAcidCodes()
-	{
-		return new ArrayList<>(this.aminoAcidCodes);
-	}
-
 	public List<AminoAcidCode> asList()
 	{
-		return new ArrayList<>(this.aminoAcidCodes);
+		return new ArrayList<>(this.codesEnumList);
 	}
 
 	/**
@@ -200,7 +224,7 @@ public class AminoAcidCodeSequence
 	 */
 	public AminoAcidCodeSequence subSequence(int start, int length)
 	{
-		return new AminoAcidCodeSequence(this.aminoAcidCodes.subList(start, start + length));
+		return new AminoAcidCodeSequence(this.codesEnumList.subList(start, start + length));
 	}
 
 	/**
@@ -211,9 +235,9 @@ public class AminoAcidCodeSequence
 	 */
 	public AminoAcidCodeSequence asAppendedWith(AminoAcidCodeSequence appendedAminoAcidCodeSequence)
 	{
-		Collection<AminoAcidCode> aminoAcidCodes2 = new ArrayList<>(this.aminoAcidCodes);
-		aminoAcidCodes2.addAll(appendedAminoAcidCodeSequence.aminoAcidCodes);
-		return new AminoAcidCodeSequence(aminoAcidCodes2);
+		Collection<AminoAcidCode> aminoAcidCodes2 = new ArrayList<>(this.codesEnumList);
+		aminoAcidCodes2.addAll(appendedAminoAcidCodeSequence.codesEnumList);
+		return new AminoAcidCodeSequence(aminoAcidCodes2).usingInMemoryCompression(this.codesEnumList.isInMemoryCompressionActive());
 	}
 
 	public static interface Builder
