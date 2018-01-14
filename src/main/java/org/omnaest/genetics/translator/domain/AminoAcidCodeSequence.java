@@ -31,6 +31,7 @@ import java.util.stream.Stream;
 import org.apache.commons.lang.ArrayUtils;
 import org.omnaest.utils.BitSetUtils;
 import org.omnaest.utils.list.enumeration.CompressableEnumList;
+import org.omnaest.utils.list.enumeration.ConstantCompressableEnumList;
 
 /**
  * {@link AminoAcidCode} sequence storage
@@ -40,7 +41,7 @@ import org.omnaest.utils.list.enumeration.CompressableEnumList;
  */
 public class AminoAcidCodeSequence
 {
-    private CompressableEnumList<AminoAcidCode> codesEnumList = new CompressableEnumList<>(AminoAcidCode.class);
+    private CompressableEnumList<AminoAcidCode> codesEnumList;
 
     public AminoAcidCodeSequence(AminoAcidCode... aminoAcidCodes)
     {
@@ -50,7 +51,7 @@ public class AminoAcidCodeSequence
     public AminoAcidCodeSequence(Collection<AminoAcidCode> aminoAcidCodes)
     {
         super();
-        this.codesEnumList.addAll(aminoAcidCodes);
+        this.codesEnumList = new ConstantCompressableEnumList<>(AminoAcidCode.class, aminoAcidCodes);
     }
 
     public AminoAcidCodeSequence(Stream<AminoAcidCode> aminoAcidCodes)
@@ -130,10 +131,15 @@ public class AminoAcidCodeSequence
     @Override
     public String toString()
     {
+        return this.toStringStream()
+                   .collect(Collectors.joining());
+    }
+
+    public Stream<String> toStringStream()
+    {
         return this.codesEnumList.stream()
                                  .filter(code -> code != null)
-                                 .map(code -> String.valueOf(code.getCode()))
-                                 .collect(Collectors.joining());
+                                 .map(code -> String.valueOf(code.getCode()));
     }
 
     public static AminoAcidCodeSequence valueOf(BitSet bitSet)
