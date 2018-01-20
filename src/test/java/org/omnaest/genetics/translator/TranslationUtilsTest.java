@@ -25,9 +25,10 @@ import static org.junit.Assert.assertTrue;
 import java.util.stream.Collectors;
 
 import org.junit.Test;
-import org.omnaest.genetics.translator.TranslationUtils;
 import org.omnaest.genetics.translator.ComplementaryBasePairUtils.ComplementationType;
 import org.omnaest.genetics.translator.TranslationUtils.MultiNucleicAcidCodeSequenceTranslation;
+import org.omnaest.genetics.translator.TranslationUtils.NucleicAcidCodeSequenceTranslation;
+import org.omnaest.genetics.translator.domain.AminoAcidCodeAndPositionAndSourceSequence;
 import org.omnaest.genetics.translator.domain.AminoAcidCodeSequence;
 import org.omnaest.genetics.translator.domain.NucleicAcidCode;
 import org.omnaest.genetics.translator.domain.NucleicAcidCodeSequence;
@@ -35,162 +36,186 @@ import org.omnaest.utils.StringUtils;
 
 public class TranslationUtilsTest
 {
-	@Test
-	public void testTransform()
-	{
-		AminoAcidCodeSequence aminoAcidCodeSequence = AminoAcidCodeSequence.valueOf(TranslationUtils.transform(	0,
-																												NucleicAcidCodeSequence.valueOf("ATGCCACCCGTTGGGGGCAAAAAGGCCAAGAAG"))
-																									.collect(Collectors.toList()));
+    @Test
+    public void testTransform()
+    {
+        AminoAcidCodeSequence aminoAcidCodeSequence = AminoAcidCodeSequence.valueOf(TranslationUtils.transform(0,
+                                                                                                               NucleicAcidCodeSequence.valueOf("ATGCCACCCGTTGGGGGCAAAAAGGCCAAGAAG"))
+                                                                                                    .collect(Collectors.toList()));
 
-		assertEquals(AminoAcidCodeSequence.valueOf("MPPVGGKKAKK"), aminoAcidCodeSequence);
-	}
+        assertEquals(AminoAcidCodeSequence.valueOf("MPPVGGKKAKK"), aminoAcidCodeSequence);
+    }
 
-	@Test
-	public void testTransformWithFrames()
-	{
-		{
-			NucleicAcidCode[] sourcesOfFirstFrame = TranslationUtils.transform(NucleicAcidCodeSequence.valueOf("ACGTTGCAT"))
-																	.skip(1)
-																	.findFirst()
-																	.get()
-																	.getSourcesOfFirstFrame();
+    @Test
+    public void testTransformWithFrames()
+    {
+        {
+            NucleicAcidCode[] sourcesOfFirstFrame = TranslationUtils.transform(NucleicAcidCodeSequence.valueOf("ACGTTGCAT"))
+                                                                    .skip(1)
+                                                                    .findFirst()
+                                                                    .get()
+                                                                    .getSourcesOfFirstFrame();
 
-			assertArrayEquals(	NucleicAcidCodeSequence	.valueOf("TTG")
-														.toArray(),
-								sourcesOfFirstFrame);
-		}
-		{
-			NucleicAcidCode[] sourcesOfSecondFrame = TranslationUtils	.transform(NucleicAcidCodeSequence.valueOf("ACGTTGCAT"))
-																		.skip(1)
-																		.findFirst()
-																		.get()
-																		.getSourcesOfSecondFrame();
+            assertArrayEquals(NucleicAcidCodeSequence.valueOf("TTG")
+                                                     .toArray(),
+                              sourcesOfFirstFrame);
+        }
+        {
+            NucleicAcidCode[] sourcesOfSecondFrame = TranslationUtils.transform(NucleicAcidCodeSequence.valueOf("ACGTTGCAT"))
+                                                                     .skip(1)
+                                                                     .findFirst()
+                                                                     .get()
+                                                                     .getSourcesOfSecondFrame();
 
-			assertArrayEquals(	NucleicAcidCodeSequence	.valueOf("CGT")
-														.toArray(),
-								sourcesOfSecondFrame);
-		}
-	}
+            assertArrayEquals(NucleicAcidCodeSequence.valueOf("CGT")
+                                                     .toArray(),
+                              sourcesOfSecondFrame);
+        }
+    }
 
-	@Test
-	public void testTranslateIntNucleicAcidCodeSequence() throws Exception
-	{
+    @Test
+    public void testTranslateIntNucleicAcidCodeSequence() throws Exception
+    {
 
-		assertEquals("MPPVGGKKAKK", TranslationUtils.translate(0, NucleicAcidCodeSequence.valueOf("ATGCCACCCGTTGGGGGCAAAAAGGCCAAGAAG"))
-													.asAminoAcidCodeSequence()
-													.toString());
-		assertEquals("CHPLGAKRPR", TranslationUtils	.translate(1, NucleicAcidCodeSequence.valueOf("ATGCCACCCGTTGGGGGCAAAAAGGCCAAGAAG"))
-													.asAminoAcidCodeSequence()
-													.toString());
-		assertEquals("ATRWGQKGQE", TranslationUtils	.translate(2, NucleicAcidCodeSequence.valueOf("ATGCCACCCGTTGGGGGCAAAAAGGCCAAGAAG"))
-													.asAminoAcidCodeSequence()
-													.toString());
+        assertEquals("MPPVGGKKAKK", TranslationUtils.translate(0, NucleicAcidCodeSequence.valueOf("ATGCCACCCGTTGGGGGCAAAAAGGCCAAGAAG"))
+                                                    .asAminoAcidCodeSequence()
+                                                    .toString());
+        assertEquals("CHPLGAKRPR", TranslationUtils.translate(1, NucleicAcidCodeSequence.valueOf("ATGCCACCCGTTGGGGGCAAAAAGGCCAAGAAG"))
+                                                   .asAminoAcidCodeSequence()
+                                                   .toString());
+        assertEquals("ATRWGQKGQE", TranslationUtils.translate(2, NucleicAcidCodeSequence.valueOf("ATGCCACCCGTTGGGGGCAAAAAGGCCAAGAAG"))
+                                                   .asAminoAcidCodeSequence()
+                                                   .toString());
 
-		//
-		assertEquals("SPS", TranslationUtils.translate(0, NucleicAcidCodeSequence.valueOf("TCGCCGTCCGC"))
-											.asAminoAcidCodeSequence()
-											.toString());
-		assertEquals("RRP", TranslationUtils.translate(1, NucleicAcidCodeSequence.valueOf("TCGCCGTCCGC"))
-											.asAminoAcidCodeSequence()
-											.toString());
-		assertEquals("AVR", TranslationUtils.translate(2, NucleicAcidCodeSequence.valueOf("TCGCCGTCCGC"))
-											.asAminoAcidCodeSequence()
-											.toString());
+        //
+        assertEquals("SPS", TranslationUtils.translate(0, NucleicAcidCodeSequence.valueOf("TCGCCGTCCGC"))
+                                            .asAminoAcidCodeSequence()
+                                            .toString());
+        assertEquals("RRP", TranslationUtils.translate(1, NucleicAcidCodeSequence.valueOf("TCGCCGTCCGC"))
+                                            .asAminoAcidCodeSequence()
+                                            .toString());
+        assertEquals("AVR", TranslationUtils.translate(2, NucleicAcidCodeSequence.valueOf("TCGCCGTCCGC"))
+                                            .asAminoAcidCodeSequence()
+                                            .toString());
 
-		//
-		assertEquals("RSRAF", TranslationUtils	.translate(0, NucleicAcidCodeSequence.valueOf("CGATCTCGGGCGTTC"))
-												.asAminoAcidCodeSequence()
-												.toString());
-		assertEquals("DLGRS", TranslationUtils	.translate(1, NucleicAcidCodeSequence.valueOf("CGATCTCGGGCGTTCTG"))
-												.asAminoAcidCodeSequence()
-												.toString());
-		assertEquals("ISGVL", TranslationUtils	.translate(2, NucleicAcidCodeSequence.valueOf("CGATCTCGGGCGTTCTG"))
-												.asAminoAcidCodeSequence()
-												.toString());
-	}
+        //
+        assertEquals("RSRAF", TranslationUtils.translate(0, NucleicAcidCodeSequence.valueOf("CGATCTCGGGCGTTC"))
+                                              .asAminoAcidCodeSequence()
+                                              .toString());
+        assertEquals("DLGRS", TranslationUtils.translate(1, NucleicAcidCodeSequence.valueOf("CGATCTCGGGCGTTCTG"))
+                                              .asAminoAcidCodeSequence()
+                                              .toString());
+        assertEquals("ISGVL", TranslationUtils.translate(2, NucleicAcidCodeSequence.valueOf("CGATCTCGGGCGTTCTG"))
+                                              .asAminoAcidCodeSequence()
+                                              .toString());
+    }
 
-	@Test
-	public void testMultiTranslate() throws Exception
-	{
-		MultiNucleicAcidCodeSequenceTranslation translation = TranslationUtils.multiTranslate(NucleicAcidCodeSequence.valueOf("ATGCCACCCGTTGGGGGCAAAAAGGCCAAGAAG"));
-		assertEquals("MPPVGGKKAKK", translation	.getForFrame(0)
-												.asAminoAcidCodeSequence()
-												.toString());
-		assertEquals("CHPLGAKRPR", translation	.getForFrame(1)
-												.asAminoAcidCodeSequence()
-												.toString());
-		assertEquals("ATRWGQKGQE", translation	.getForFrame(2)
-												.asAminoAcidCodeSequence()
-												.toString());
-	}
+    @Test
+    public void testMultiTranslate() throws Exception
+    {
+        MultiNucleicAcidCodeSequenceTranslation translation = TranslationUtils.multiTranslate(NucleicAcidCodeSequence.valueOf("ATGCCACCCGTTGGGGGCAAAAAGGCCAAGAAG"));
+        assertEquals("MPPVGGKKAKK", translation.getForFrame(0)
+                                               .asAminoAcidCodeSequence()
+                                               .toString());
+        assertEquals("CHPLGAKRPR", translation.getForFrame(1)
+                                              .asAminoAcidCodeSequence()
+                                              .toString());
+        assertEquals("ATRWGQKGQE", translation.getForFrame(2)
+                                              .asAminoAcidCodeSequence()
+                                              .toString());
+    }
 
-	@Test
-	public void testReverseStrand() throws Exception
-	{
-		NucleicAcidCodeSequence reverseStrand = TranslationUtils.reverseStrand(NucleicAcidCodeSequence.valueOf("GCGATATCGCAAA"), ComplementationType.DNA);
-		assertEquals("CGCTATAGCGTTT", reverseStrand.toString());
+    @Test
+    public void testReverseStrand() throws Exception
+    {
+        NucleicAcidCodeSequence reverseStrand = TranslationUtils.reverseStrand(NucleicAcidCodeSequence.valueOf("GCGATATCGCAAA"), ComplementationType.DNA);
+        assertEquals("CGCTATAGCGTTT", reverseStrand.toString());
 
-		NucleicAcidCodeSequence rnaAntisenseStrand = TranslationUtils.translateFromDNAToRNA(reverseStrand);
-		assertEquals("CGCUAUAGCGUUU", rnaAntisenseStrand.toString());
+        NucleicAcidCodeSequence rnaAntisenseStrand = TranslationUtils.translateFromDNAToRNA(reverseStrand);
+        assertEquals("CGCUAUAGCGUUU", rnaAntisenseStrand.toString());
 
-		NucleicAcidCodeSequence rnaSenseStrand = TranslationUtils.reverseStrand(rnaAntisenseStrand, ComplementationType.RNA);
-		assertEquals("GCGAUAUCGCAAA", rnaSenseStrand.toString());
-	}
+        NucleicAcidCodeSequence rnaSenseStrand = TranslationUtils.reverseStrand(rnaAntisenseStrand, ComplementationType.RNA);
+        assertEquals("GCGAUAUCGCAAA", rnaSenseStrand.toString());
+    }
 
-	@Test
-	public void testTranslateReverse() throws Exception
-	{
-		assertEquals(StringUtils.reverse("FAIS"), TranslationUtils	.translateReverse(0, NucleicAcidCodeSequence.valueOf("GCGATATCGCAAA"))
-																	.asAminoAcidCodeSequence()
-																	.toString());
-		assertEquals(StringUtils.reverse("LRYR"), TranslationUtils	.translateReverse(1, NucleicAcidCodeSequence.valueOf("GCGATATCGCAAA"))
-																	.asAminoAcidCodeSequence()
-																	.toString());
-		assertEquals(StringUtils.reverse("CDI"), TranslationUtils	.translateReverse(2, NucleicAcidCodeSequence.valueOf("GCGATATCGCAAA"))
-																	.asAminoAcidCodeSequence()
-																	.toString());
+    @Test
+    public void testReverseFrameTranslationSourcePosition() throws Exception
+    {
+        /*
+         * AA AGC AGA TTC CAC ATC
+         * TT TCG TCT AAG GTG TAG (reverse)
+         * ___A___S___E___V___D
+         */
+        NucleicAcidCodeSequenceTranslation translation = TranslationUtils.translate(NucleicAcidCodeSequence.valueOf("AAAGCAGATTCCACATC"))
+                                                                         .allReverseFrames()
+                                                                         .get()
+                                                                         .findFirst()
+                                                                         .get();
+        AminoAcidCodeAndPositionAndSourceSequence sequence = translation.asAminoAcidCodeAndPositionAndSourceSequence();
+        assertEquals("ASEVD", sequence.asAminoAcidCodeSequence()
+                                      .toString());
+        assertEquals(2, sequence.asCodeAndPositionAndSourceStream()
+                                .findFirst()
+                                .get()
+                                .getSources()
+                                .get(2)
+                                .getPosition());
+    }
 
-	}
+    @Test
+    public void testTranslateReverse() throws Exception
+    {
+        assertEquals(StringUtils.reverse("FAIS"), TranslationUtils.translateReverse(0, NucleicAcidCodeSequence.valueOf("GCGATATCGCAAA"))
+                                                                  .asAminoAcidCodeSequence()
+                                                                  .toString());
+        assertEquals(StringUtils.reverse("LRYR"), TranslationUtils.translateReverse(1, NucleicAcidCodeSequence.valueOf("GCGATATCGCAAA"))
+                                                                  .asAminoAcidCodeSequence()
+                                                                  .toString());
+        assertEquals(StringUtils.reverse("CDI"), TranslationUtils.translateReverse(2, NucleicAcidCodeSequence.valueOf("GCGATATCGCAAA"))
+                                                                 .asAminoAcidCodeSequence()
+                                                                 .toString());
 
-	@Test
-	public void testTranslation()
-	{
-		{
-			//
-			boolean anyMatch = TranslationUtils	.translate("ATGCTCCGTCCCGGCGCGCAGCTGCTGCGGG")
-												.allFrames()
-												.get()
-												.anyMatch(translation -> org.apache.commons.lang3.StringUtils.equalsIgnoreCase(	translation	.asAminoAcidCodeSequence()
-																																			.toString(),
-																																"MLRPGAQLLR"));
+    }
 
-			assertTrue(anyMatch);
-		}
-		{
-			//
-			String sequence = StringUtils.reverse("ATGCTCCGTCCCGGCGCGCAGCTGCTGCGGG");
+    @Test
+    public void testTranslation()
+    {
+        {
+            //
+            boolean anyMatch = TranslationUtils.translate("ATGCTCCGTCCCGGCGCGCAGCTGCTGCGGG")
+                                               .allFrames()
+                                               .get()
+                                               .anyMatch(translation -> org.apache.commons.lang3.StringUtils.equalsIgnoreCase(translation.asAminoAcidCodeSequence()
+                                                                                                                                         .toString(),
+                                                                                                                              "MLRPGAQLLR"));
 
-			String reverseStrand = TranslationUtils	.reverseStrand(NucleicAcidCodeSequence.valueOf(sequence), ComplementationType.DNA)
-													.toString();
+            assertTrue(anyMatch);
+        }
+        {
+            //
+            String sequence = StringUtils.reverse("ATGCTCCGTCCCGGCGCGCAGCTGCTGCGGG");
 
-			//			System.out.println(reverseStrand);
-			//			String reverseTranslation = TranslationUtils.translateReverse(0, NucleicAcidCodeSequence.valueOf(reverseStrand))
-			//														.asAminoAcidCodeSequence()
-			//														.toString();
-			//			System.out.println(reverseTranslation);
-			//			System.out.println();
+            String reverseStrand = TranslationUtils.reverseStrand(NucleicAcidCodeSequence.valueOf(sequence), ComplementationType.DNA)
+                                                   .toString();
 
-			boolean anyMatch = TranslationUtils	.translate(reverseStrand)
-												.allReverseFrames()
-												.get()
-												.map(translation -> translation	.asAminoAcidCodeSequence()
-																				.toString())
-												//												.peek(System.out::println)
-												.anyMatch(isequence -> org.apache.commons.lang3.StringUtils.equalsIgnoreCase(	isequence,
-																																org.apache.commons.lang3.StringUtils.reverse("MLRPGAQLLR")));
+            //			System.out.println(reverseStrand);
+            //			String reverseTranslation = TranslationUtils.translateReverse(0, NucleicAcidCodeSequence.valueOf(reverseStrand))
+            //														.asAminoAcidCodeSequence()
+            //														.toString();
+            //			System.out.println(reverseTranslation);
+            //			System.out.println();
 
-			assertTrue(anyMatch);
-		}
-	}
+            boolean anyMatch = TranslationUtils.translate(reverseStrand)
+                                               .allReverseFrames()
+                                               .get()
+                                               .map(translation -> translation.asAminoAcidCodeSequence()
+                                                                              .toString())
+                                               //												.peek(System.out::println)
+                                               .anyMatch(isequence -> org.apache.commons.lang3.StringUtils.equalsIgnoreCase(isequence,
+                                                                                                                            org.apache.commons.lang3.StringUtils.reverse("MLRPGAQLLR")));
+
+            assertTrue(anyMatch);
+        }
+    }
 
 }
