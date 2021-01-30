@@ -46,7 +46,7 @@ import org.omnaest.utils.list.enumeration.ConstantCompressableEnumList;
  * @see AminoAcidCodeSequence
  * @author omnaest
  */
-public class NucleicAcidCodeSequence implements Iterable<NucleicAcidCode>
+public class NucleicAcidCodeSequence implements Iterable<NucleicAcidCode>, CodeSequence<NucleicAcidCode>
 {
     private CompressableEnumList<NucleicAcidCode> codesEnumList;
 
@@ -167,4 +167,54 @@ public class NucleicAcidCodeSequence implements Iterable<NucleicAcidCode>
         return TranslationUtils.reverseStrand(this, complementationType)
                                .usingInMemoryCompression(this.codesEnumList.isInMemoryCompressionActive());
     }
+
+    @Override
+    public int hashCode()
+    {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((this.codesEnumList == null) ? 0 : this.codesEnumList.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (this == obj)
+        {
+            return true;
+        }
+        if (obj == null)
+        {
+            return false;
+        }
+        if (this.getClass() != obj.getClass())
+        {
+            return false;
+        }
+        NucleicAcidCodeSequence other = (NucleicAcidCodeSequence) obj;
+        if (this.codesEnumList == null)
+        {
+            if (other.codesEnumList != null)
+            {
+                return false;
+            }
+        }
+        else if (!this.codesEnumList.equals(other.codesEnumList))
+        {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Returns an empty {@link NucleicAcidCodeSequence}
+     * 
+     * @return
+     */
+    public static NucleicAcidCodeSequence empty()
+    {
+        return valueOf("");
+    }
+
 }

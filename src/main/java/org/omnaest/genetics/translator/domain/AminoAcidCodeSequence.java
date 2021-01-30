@@ -30,6 +30,7 @@ import java.util.stream.Stream;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.omnaest.utils.BitSetUtils;
+import org.omnaest.utils.ListUtils;
 import org.omnaest.utils.list.enumeration.CompressableEnumList;
 import org.omnaest.utils.list.enumeration.ConstantCompressableEnumList;
 
@@ -39,7 +40,7 @@ import org.omnaest.utils.list.enumeration.ConstantCompressableEnumList;
  * @see NucleicAcidCodeSequence
  * @author omnaest
  */
-public class AminoAcidCodeSequence
+public class AminoAcidCodeSequence implements CodeSequence<AminoAcidCode>
 {
     private CompressableEnumList<AminoAcidCode> codesEnumList;
 
@@ -303,6 +304,16 @@ public class AminoAcidCodeSequence
     public static AminoAcidCodeSequence valueOf(Stream<AminoAcidCode> aminoAcidCodes)
     {
         return new AminoAcidCodeSequence(aminoAcidCodes);
+    }
+
+    /**
+     * Returns the codes of the current {@link AminoAcidCodeSequence} in reverse order
+     * 
+     * @return
+     */
+    public AminoAcidCodeSequence reverse()
+    {
+        return valueOf(ListUtils.inverse(this.codesEnumList));
     }
 
 }

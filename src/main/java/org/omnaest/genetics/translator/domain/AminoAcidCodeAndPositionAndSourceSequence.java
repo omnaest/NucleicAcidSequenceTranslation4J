@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.omnaest.utils.ListUtils;
+
 /**
  * @see #valueOf(Stream)
  * @see #valueOf(List)
@@ -45,10 +47,40 @@ public class AminoAcidCodeAndPositionAndSourceSequence
                                                  .map(capas -> capas.getCode()));
     }
 
+    /**
+     * Returns the {@link NucleicAcidCode} source of the current {@link AminoAcidCodeAndPositionAndSourceSequence} as {@link NucleicAcidCodeSequence}
+     * 
+     * @return
+     */
+    public NucleicAcidCodeSequence asNucleicAcidCodeSequence()
+    {
+        List<NucleicAcidCode> codes = this.asCodeAndPositionAndSourceStream()
+                                          .flatMap(capas -> capas.getSources()
+                                                                 .stream()
+                                                                 .map(CodeAndPosition<NucleicAcidCode>::getCode))
+                                          .collect(Collectors.toList());
+        return NucleicAcidCodeSequence.valueOf(codes);
+    }
+
     @Override
     public String toString()
     {
         return "AminoAcidCodeAndPositionAndSourceSequence [" + this.asAminoAcidCodeSequence() + "]";
+    }
+
+    public AminoAcidCodeAndPositionAndSourceSequence subSequence(int start, int length)
+    {
+        return valueOf(this.sequence.subList(start, start + length));
+    }
+
+    /**
+     * Returns the sequence in reverse order. The position information is kept from the original sequence.
+     * 
+     * @return
+     */
+    public AminoAcidCodeAndPositionAndSourceSequence reverse()
+    {
+        return valueOf(ListUtils.inverse(this.sequence));
     }
 
 }

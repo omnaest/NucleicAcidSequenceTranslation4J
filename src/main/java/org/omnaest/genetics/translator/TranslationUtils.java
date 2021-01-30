@@ -51,10 +51,27 @@ public class TranslationUtils
     private static class NucleicAcidCodeSequenceTranslationImpl implements NucleicAcidCodeSequenceTranslation
     {
         private Stream<CodeAndPositionAndSource<AminoAcidCode, NucleicAcidCode>> codeAndPositionAndSourceStream;
+        private int                                                              frame;
+        private boolean                                                          reverse;
 
-        public NucleicAcidCodeSequenceTranslationImpl(Stream<CodeAndPositionAndSource<AminoAcidCode, NucleicAcidCode>> codeAndPositionAndSourceStream)
+        public NucleicAcidCodeSequenceTranslationImpl(Stream<CodeAndPositionAndSource<AminoAcidCode, NucleicAcidCode>> codeAndPositionAndSourceStream,
+                                                      int frame, boolean reverse)
         {
             this.codeAndPositionAndSourceStream = codeAndPositionAndSourceStream;
+            this.frame = frame;
+            this.reverse = reverse;
+        }
+
+        @Override
+        public boolean isReverse()
+        {
+            return this.reverse;
+        }
+
+        @Override
+        public int getFrame()
+        {
+            return this.frame;
         }
 
         @Override
@@ -452,6 +469,22 @@ public class TranslationUtils
          * @return
          */
         public AminoAcidCodeAndPositionAndSourceSequence asAminoAcidCodeAndPositionAndSourceSequence();
+
+        /**
+         * Returns the frame: n=0,1,2
+         * 
+         * @see #isReverse()
+         * @return
+         */
+        public int getFrame();
+
+        /**
+         * Returns true if the translation is based on the reverse strand
+         * 
+         * @see #getFrame()
+         * @return
+         */
+        public boolean isReverse();
     }
 
     /**
@@ -531,8 +564,19 @@ public class TranslationUtils
     {
         public TranslationBuilder frames(int... frames);
 
+        /**
+         * Adds the frames 0,1,2
+         * 
+         * @return
+         */
         public TranslationBuilder allFrames();
 
+        /**
+         * Adds the reverse frames 0,1,2
+         * 
+         * @param frames
+         * @return
+         */
         public TranslationBuilder reverseFrames(int... frames);
 
         public TranslationBuilder allReverseFrames();
@@ -633,7 +677,9 @@ public class TranslationUtils
      */
     public static NucleicAcidCodeSequenceTranslation translate(int frame, NucleicAcidCodeSequence sequence)
     {
-        return translateCodeAndPosition(frame, sequence.asCodeAndPositionSequence());
+        return translateCodeAndPosition(frame, sequence != null ? sequence.asCodeAndPositionSequence()
+                : NucleicAcidCodeSequence.valueOf("")
+                                         .asCodeAndPositionSequence());
     }
 
     /**
@@ -656,17 +702,31 @@ public class TranslationUtils
     public static NucleicAcidCodeSequenceTranslation translateReverse(int frame, NucleicAcidCodeSequence sequence)
     {
         ComplementationType complementationType = ComplementationType.DNA;
+        boolean reverse = true;
         return new NucleicAcidCodeSequenceTranslationImpl(StreamUtils.reverse(translate(frame, sequence.inverse()
                                                                                                        .asReverseStrand(complementationType)).asCodeAndPositionAndSourceSequence()
                                                                                                                                              .map(capas -> new CodeAndPositionAndSource<>(capas.getCode(),
                                                                                                                                                                                           capas.getPosition(),
                                                                                                                                                                                           capas.getSources()
                                                                                                                                                                                                .stream()
-                                                                                                                                                                                               .map(cap -> new CodeAndPosition<>(cap.getCode(),
+                                                                                                                                                                                               .map(cap -> new CodeAndPosition<>(
+
+                                                                                                                                                                                                                                 ComplementaryBasePairUtils.toComplement(cap.getCode(),
+                                                                                                                                                                                                                                                                         complementationType)
+                                                                                                                                                                                                                                 /*
+                                                                                                                                                                                                                                  * cap
+                                                                                                                                                                                                                                  * .
+                                                                                                                                                                                                                                  * getCode
+                                                                                                                                                                                                                                  * (
+                                                                                                                                                                                                                                  * )
+                                                                                                                                                                                                                                  */
+
+                                                                                                                                                                                                                                 ,
                                                                                                                                                                                                                                  (sequence.size()
                                                                                                                                                                                                                                          - 1)
                                                                                                                                                                                                                                          - cap.getPosition()))
-                                                                                                                                                                                               .collect(Collectors.toList())))));
+                                                                                                                                                                                               .collect(Collectors.toList())))),
+                                                          frame, reverse);
     }
 
     /**
@@ -700,7 +760,7 @@ public class TranslationUtils
     public static NucleicAcidCodeSequenceTranslation translateCodeAndPosition(int frame, Stream<CodeAndPosition<NucleicAcidCode>> sequence)
     {
         AtomicLong position = new AtomicLong();
-        Stream<CodeAndPositionAndSource<AminoAcidCode, NucleicAcidCode>> retval = StreamUtils.framed(3, sequence.skip(frame))
+        Stream<CodeAndPositionAndSource<AminoAcidCode, NucleicAcidCode>> retval = StreamUtils.framedPreserveSize(3, sequence.skip(frame))
                                                                                              .map(codes ->
                                                                                              {
                                                                                                  List<CodeAndPosition<NucleicAcidCode>> codesList = Arrays.asList(codes);
@@ -716,7 +776,8 @@ public class TranslationUtils
                                                                                                                                                                         codesList);
                                                                                              })
                                                                                              .filter(cap -> cap != null);
-        return new NucleicAcidCodeSequenceTranslationImpl(retval);
+        boolean reverse = false;
+        return new NucleicAcidCodeSequenceTranslationImpl(retval, frame, reverse);
     }
 
     public static interface MultiNucleicAcidCodeSequenceTranslation
