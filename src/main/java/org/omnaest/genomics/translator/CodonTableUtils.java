@@ -16,7 +16,7 @@
 
 
 */
-package org.omnaest.genetics.translator;
+package org.omnaest.genomics.translator;
 
 import java.util.Arrays;
 import java.util.List;
@@ -26,8 +26,8 @@ import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.ArrayUtils;
-import org.omnaest.genetics.translator.domain.AminoAcidCode;
-import org.omnaest.genetics.translator.domain.NucleicAcidCode;
+import org.omnaest.genomics.translator.domain.AminoAcidCode;
+import org.omnaest.genomics.translator.domain.NucleicAcidCode;
 
 public class CodonTableUtils
 {

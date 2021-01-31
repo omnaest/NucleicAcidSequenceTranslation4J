@@ -16,7 +16,7 @@
 
 
 */
-package org.omnaest.genetics.translator.domain;
+package org.omnaest.genomics.translator.domain;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,8 +29,8 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang.ArrayUtils;
-import org.omnaest.genetics.translator.ComplementaryBasePairUtils.ComplementationType;
-import org.omnaest.genetics.translator.TranslationUtils;
+import org.omnaest.genomics.translator.ComplementaryBasePairUtils.ComplementationType;
+import org.omnaest.genomics.translator.TranslationUtils;
 import org.omnaest.utils.ListUtils;
 import org.omnaest.utils.ObjectUtils;
 import org.omnaest.utils.list.enumeration.CompressableEnumList;

@@ -1,4 +1,4 @@
-package org.omnaest.genetics.translator.domain;
+package org.omnaest.genomics.translator.domain;
 
 import java.util.ArrayList;
 import java.util.List;

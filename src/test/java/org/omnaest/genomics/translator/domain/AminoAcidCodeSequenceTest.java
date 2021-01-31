@@ -16,11 +16,12 @@
 
 
 */
-package org.omnaest.genetics.translator.domain;
+package org.omnaest.genomics.translator.domain;
 
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
+import org.omnaest.genomics.translator.domain.AminoAcidCodeSequence;
 
 public class AminoAcidCodeSequenceTest
 {

@@ -16,14 +16,14 @@
 
 
 */
-package org.omnaest.genetics.translator;
+package org.omnaest.genomics.translator;
 
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
-import org.omnaest.genetics.translator.ComplementaryBasePairUtils;
-import org.omnaest.genetics.translator.ComplementaryBasePairUtils.ComplementationType;
-import org.omnaest.genetics.translator.domain.NucleicAcidCode;
+import org.omnaest.genomics.translator.ComplementaryBasePairUtils;
+import org.omnaest.genomics.translator.ComplementaryBasePairUtils.ComplementationType;
+import org.omnaest.genomics.translator.domain.NucleicAcidCode;
 
 public class ComplementaryBasePairUtilsTest
 {

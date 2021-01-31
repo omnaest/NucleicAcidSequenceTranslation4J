@@ -16,7 +16,7 @@
 
 
 */
-package org.omnaest.genetics.translator;
+package org.omnaest.genomics.translator;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -25,13 +25,14 @@ import static org.junit.Assert.assertTrue;
 import java.util.stream.Collectors;
 
 import org.junit.Test;
-import org.omnaest.genetics.translator.ComplementaryBasePairUtils.ComplementationType;
-import org.omnaest.genetics.translator.TranslationUtils.MultiNucleicAcidCodeSequenceTranslation;
-import org.omnaest.genetics.translator.TranslationUtils.NucleicAcidCodeSequenceTranslation;
-import org.omnaest.genetics.translator.domain.AminoAcidCodeAndPositionAndSourceSequence;
-import org.omnaest.genetics.translator.domain.AminoAcidCodeSequence;
-import org.omnaest.genetics.translator.domain.NucleicAcidCode;
-import org.omnaest.genetics.translator.domain.NucleicAcidCodeSequence;
+import org.omnaest.genomics.translator.TranslationUtils;
+import org.omnaest.genomics.translator.ComplementaryBasePairUtils.ComplementationType;
+import org.omnaest.genomics.translator.TranslationUtils.MultiNucleicAcidCodeSequenceTranslation;
+import org.omnaest.genomics.translator.TranslationUtils.NucleicAcidCodeSequenceTranslation;
+import org.omnaest.genomics.translator.domain.AminoAcidCodeAndPositionAndSourceSequence;
+import org.omnaest.genomics.translator.domain.AminoAcidCodeSequence;
+import org.omnaest.genomics.translator.domain.NucleicAcidCode;
+import org.omnaest.genomics.translator.domain.NucleicAcidCodeSequence;
 import org.omnaest.utils.StringUtils;
 
 public class TranslationUtilsTest

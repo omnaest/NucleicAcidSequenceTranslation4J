@@ -17,7 +17,7 @@
 
 */
 
-package org.omnaest.genetics.translator;
+package org.omnaest.genomics.translator;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,15 +33,15 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import org.omnaest.genetics.translator.ComplementaryBasePairUtils.ComplementationType;
-import org.omnaest.genetics.translator.domain.AminoAcidCode;
-import org.omnaest.genetics.translator.domain.AminoAcidCodeAndPositionAndSourceSequence;
-import org.omnaest.genetics.translator.domain.AminoAcidCodeSequence;
-import org.omnaest.genetics.translator.domain.CodeAndPosition;
-import org.omnaest.genetics.translator.domain.CodeAndPositionAndSource;
-import org.omnaest.genetics.translator.domain.CodeAndPositionSequence;
-import org.omnaest.genetics.translator.domain.NucleicAcidCode;
-import org.omnaest.genetics.translator.domain.NucleicAcidCodeSequence;
+import org.omnaest.genomics.translator.ComplementaryBasePairUtils.ComplementationType;
+import org.omnaest.genomics.translator.domain.AminoAcidCode;
+import org.omnaest.genomics.translator.domain.AminoAcidCodeAndPositionAndSourceSequence;
+import org.omnaest.genomics.translator.domain.AminoAcidCodeSequence;
+import org.omnaest.genomics.translator.domain.CodeAndPosition;
+import org.omnaest.genomics.translator.domain.CodeAndPositionAndSource;
+import org.omnaest.genomics.translator.domain.CodeAndPositionSequence;
+import org.omnaest.genomics.translator.domain.NucleicAcidCode;
+import org.omnaest.genomics.translator.domain.NucleicAcidCodeSequence;
 import org.omnaest.utils.ArrayUtils;
 import org.omnaest.utils.ListUtils;
 import org.omnaest.utils.StreamUtils;
