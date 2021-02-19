@@ -4,12 +4,12 @@ DNA/RNA translation utils
 # Example
 
 	assertEquals("MPPVGGKKAKK", TranslationUtils.translate(0, NucleicAcidCodeSequence.valueOf("ATGCCACCCGTTGGGGGCAAAAAGGCCAAGAAG"))
-																					 .asAminoAcidCodeSequence()
-																					 .toString());
+                                                                                    .asAminoAcidCodeSequence()
+                                                                                    .toString());
 																					 
 	assertEquals(StringUtils.reverse("FAIS"), TranslationUtils.translateReverse(0, NucleicAcidCodeSequence.valueOf("GCGATATCGCAAA"))
-																										  .asAminoAcidCodeSequence()
-																										  .toString());																				 
+                                                                                                          .asAminoAcidCodeSequence()
+                                                                                                          .toString());																				 
 
 # Maven Snapshots
 
